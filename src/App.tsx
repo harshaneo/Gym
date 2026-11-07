@@ -10,6 +10,9 @@ import { CRMLeadsView } from './components/views/CRMLeadsView';
 import { MembersView } from './components/views/MembersView';
 import { ClassesView } from './components/views/ClassesView';
 import { GymSettingsView } from './components/views/GymSettingsView';
+import { RetailPOSView } from './components/views/RetailPOSView';
+import { RetentionRadarView } from './components/views/RetentionRadarView';
+import { EquipmentTrackerView } from './components/views/EquipmentTrackerView';
 import { PublicPortalPreview } from './components/views/PublicPortalPreview';
 import { PlatformControlPlaneView } from './components/views/PlatformControlPlaneView';
 import { 
@@ -90,6 +93,9 @@ const MainLayout: React.FC = () => {
           {currentTab === 'crm' && <CRMLeadsView />}
           {currentTab === 'members' && <MembersView />}
           {currentTab === 'classes' && <ClassesView />}
+          {currentTab === 'pos' && <RetailPOSView />}
+          {currentTab === 'retention' && <RetentionRadarView />}
+          {currentTab === 'equipment' && <EquipmentTrackerView />}
           {currentTab === 'settings' && <GymSettingsView />}
         </main>
       </div>

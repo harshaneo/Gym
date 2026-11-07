@@ -13,7 +13,10 @@ import {
   X,
   Shield,
   Briefcase,
-  Globe
+  Globe,
+  ShoppingBag,
+  TrendingDown,
+  Wrench
 } from 'lucide-react';
 
 export type NavTab = 
@@ -24,6 +27,9 @@ export type NavTab =
   | 'crm' 
   | 'members' 
   | 'classes' 
+  | 'pos'
+  | 'retention'
+  | 'equipment'
   | 'settings';
 
 interface SidebarProps {
@@ -43,9 +49,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
     { id: 'kiosk' as NavTab, label: 'Check-In', icon: UserCheck, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'appointments' as NavTab, label: 'Appointments', icon: CalendarClock, count: todayApptsCount, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'classes' as NavTab, label: 'Classes', icon: CalendarRange, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
+    { id: 'pos' as NavTab, label: 'Retail & POS', icon: ShoppingBag, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'crm' as NavTab, label: 'Pipeline', icon: Target, count: activeLeadsCount, roles: ['GYM_OWNER'] },
-    { id: 'promotions' as NavTab, label: 'Promotions', icon: Ticket, roles: ['GYM_OWNER'] },
+    { id: 'retention' as NavTab, label: 'Retention Radar', icon: TrendingDown, roles: ['GYM_OWNER'] },
     { id: 'members' as NavTab, label: 'Members', icon: Users2, roles: ['GYM_OWNER'] },
+    { id: 'equipment' as NavTab, label: 'Equipment & Ops', icon: Wrench, roles: ['GYM_OWNER'] },
+    { id: 'promotions' as NavTab, label: 'Promotions', icon: Ticket, roles: ['GYM_OWNER'] },
     { id: 'settings' as NavTab, label: 'Settings', icon: Settings, roles: ['GYM_OWNER'] },
   ];
 
@@ -162,9 +171,12 @@ export const MobileDrawer: React.FC<{
     { id: 'kiosk' as NavTab, label: 'Check-In', icon: UserCheck, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'appointments' as NavTab, label: 'Appointments', icon: CalendarClock, count: todayApptsCount, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'classes' as NavTab, label: 'Classes', icon: CalendarRange, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
+    { id: 'pos' as NavTab, label: 'Retail & POS', icon: ShoppingBag, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'crm' as NavTab, label: 'Pipeline', icon: Target, count: activeLeadsCount, roles: ['GYM_OWNER'] },
-    { id: 'promotions' as NavTab, label: 'Promotions', icon: Ticket, roles: ['GYM_OWNER'] },
+    { id: 'retention' as NavTab, label: 'Retention Radar', icon: TrendingDown, roles: ['GYM_OWNER'] },
     { id: 'members' as NavTab, label: 'Members', icon: Users2, roles: ['GYM_OWNER'] },
+    { id: 'equipment' as NavTab, label: 'Equipment & Ops', icon: Wrench, roles: ['GYM_OWNER'] },
+    { id: 'promotions' as NavTab, label: 'Promotions', icon: Ticket, roles: ['GYM_OWNER'] },
     { id: 'settings' as NavTab, label: 'Settings', icon: Settings, roles: ['GYM_OWNER'] },
   ];
 

@@ -2,12 +2,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   Tenant, Coach, CRMLead, Appointment, Promotion, Member, GroupClass, CheckInLog,
   LeadStage, AppointmentStatus, MembershipTier,
-  UserRole, PlatformTenantInfo, PlatformFeatureFlag, PlatformAuditLog
+  UserRole, PlatformTenantInfo, PlatformFeatureFlag, PlatformAuditLog,
+  RetailProduct, RetailTransaction, ChurnRiskMember, GymEquipment
 } from '../types';
 import { 
   INITIAL_TENANTS, INITIAL_COACHES, INITIAL_LEADS, INITIAL_APPOINTMENTS, 
   INITIAL_PROMOTIONS, INITIAL_MEMBERS, INITIAL_CLASSES, INITIAL_CHECKINS,
-  INITIAL_PLATFORM_TENANTS, INITIAL_FEATURE_FLAGS, INITIAL_PLATFORM_AUDIT_LOGS
+  INITIAL_PLATFORM_TENANTS, INITIAL_FEATURE_FLAGS, INITIAL_PLATFORM_AUDIT_LOGS,
+  INITIAL_RETAIL_PRODUCTS, INITIAL_CHURN_RISKS, INITIAL_EQUIPMENT
 } from '../data/mockData';
 
 interface TenantContextType {
@@ -37,6 +39,15 @@ interface TenantContextType {
   members: Member[];
   classes: GroupClass[];
   checkInLogs: CheckInLog[];
+
+  // Retail POS, Retention & Equipment Operations
+  products: RetailProduct[];
+  transactions: RetailTransaction[];
+  churnRisks: ChurnRiskMember[];
+  equipment: GymEquipment[];
+  sellRetailCart: (items: { product: RetailProduct; quantity: number }[], paymentMethod: 'CARD' | 'CASH' | 'ACCOUNT_ON_FILE', memberName?: string) => void;
+  dispatchRetentionAction: (riskId: string, actionNote: string) => void;
+  updateEquipmentStatus: (equipmentId: string, status: 'OPERATIONAL' | 'NEEDS_SERVICE' | 'OUT_OF_ORDER', notes?: string) => void;
 
   // Mutations
   addLead: (lead: Omit<CRMLead, 'id' | 'tenantId' | 'createdAt' | 'lastContactedAt'>) => void;
@@ -85,6 +96,12 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [allPromotions, setAllPromotions] = useState<Promotion[]>(INITIAL_PROMOTIONS);
   const [allMembers, setAllMembers] = useState<Member[]>(INITIAL_MEMBERS);
   const [allCheckIns, setAllCheckIns] = useState<CheckInLog[]>(INITIAL_CHECKINS);
+
+  // Retail, Churn & Equipment State
+  const [allProducts, setAllProducts] = useState<RetailProduct[]>(INITIAL_RETAIL_PRODUCTS);
+  const [allTransactions, setAllTransactions] = useState<RetailTransaction[]>([]);
+  const [allChurnRisks, setAllChurnRisks] = useState<ChurnRiskMember[]>(INITIAL_CHURN_RISKS);
+  const [allEquipment, setAllEquipment] = useState<GymEquipment[]>(INITIAL_EQUIPMENT);
 
   const setRole = (role: UserRole) => {
     setCurrentRole(role);
@@ -221,6 +238,69 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const members = allMembers.filter(m => m.tenantId === currentTenant.id);
   const classes = INITIAL_CLASSES.filter(c => c.tenantId === currentTenant.id);
   const checkInLogs = allCheckIns.filter(c => c.tenantId === currentTenant.id);
+
+  const products = allProducts.filter(p => p.tenantId === currentTenant.id);
+  const transactions = allTransactions.filter(t => t.tenantId === currentTenant.id);
+  const churnRisks = allChurnRisks.filter(r => r.tenantId === currentTenant.id);
+  const equipment = allEquipment.filter(e => e.tenantId === currentTenant.id);
+
+  const sellRetailCart = (
+    items: { product: RetailProduct; quantity: number }[],
+    paymentMethod: 'CARD' | 'CASH' | 'ACCOUNT_ON_FILE',
+    memberName?: string
+  ) => {
+    const totalCents = items.reduce((sum, item) => sum + item.product.priceCents * item.quantity, 0);
+    const newTx: RetailTransaction = {
+      id: `tx-${Date.now()}`,
+      tenantId: currentTenant.id,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      items: items.map(i => ({ productName: i.product.name, quantity: i.quantity, priceCents: i.product.priceCents })),
+      totalCents,
+      paymentMethod,
+      memberName,
+    };
+    setAllTransactions(prev => [newTx, ...prev]);
+
+    // Reduce inventory count
+    setAllProducts(prev => prev.map(p => {
+      const match = items.find(i => i.product.id === p.id);
+      if (match) {
+        return { ...p, stockCount: Math.max(0, p.stockCount - match.quantity) };
+      }
+      return p;
+    }));
+  };
+
+  const dispatchRetentionAction = (riskId: string, actionNote: string) => {
+    setAllChurnRisks(prev => prev.map(r => {
+      if (r.id === riskId) {
+        return {
+          ...r,
+          riskScorePct: Math.max(10, r.riskScorePct - 30),
+          suggestedAction: `Dispatched: ${actionNote} (Outreach logged)`,
+        };
+      }
+      return r;
+    }));
+  };
+
+  const updateEquipmentStatus = (
+    equipmentId: string,
+    status: 'OPERATIONAL' | 'NEEDS_SERVICE' | 'OUT_OF_ORDER',
+    notes?: string
+  ) => {
+    setAllEquipment(prev => prev.map(e => {
+      if (e.id === equipmentId) {
+        return {
+          ...e,
+          status,
+          notes: notes ? `${notes} · Updated on ${new Date().toISOString().split('T')[0]}` : e.notes,
+          lastServiceDate: status === 'OPERATIONAL' ? new Date().toISOString().split('T')[0] : e.lastServiceDate,
+        };
+      }
+      return e;
+    }));
+  };
 
   // CRM mutations
   const addLead = (lead: Omit<CRMLead, 'id' | 'tenantId' | 'createdAt' | 'lastContactedAt'>) => {
@@ -598,6 +678,13 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       members,
       classes,
       checkInLogs,
+      products,
+      transactions,
+      churnRisks,
+      equipment,
+      sellRetailCart,
+      dispatchRetentionAction,
+      updateEquipmentStatus,
       addLead,
       updateLeadStage,
       updateLeadNotes,

@@ -182,3 +182,65 @@ export interface CheckInLog {
   status: 'GRANTED' | 'WARNING_LOW_CREDITS' | 'DENIED_PAST_DUE';
   message: string;
 }
+
+export type NavTab = 
+  | 'overview' 
+  | 'kiosk' 
+  | 'appointments' 
+  | 'promotions' 
+  | 'crm' 
+  | 'members' 
+  | 'classes' 
+  | 'pos'
+  | 'retention'
+  | 'equipment'
+  | 'settings';
+
+export interface RetailProduct {
+  id: string;
+  tenantId: string;
+  name: string;
+  category: 'SUPPLEMENTS' | 'BEVERAGES' | 'APPAREL' | 'GEAR' | 'PASSES';
+  priceCents: number;
+  stockCount: number;
+  sku: string;
+}
+
+export interface RetailTransaction {
+  id: string;
+  tenantId: string;
+  timestamp: string;
+  items: { productName: string; quantity: number; priceCents: number }[];
+  totalCents: number;
+  paymentMethod: 'CARD' | 'CASH' | 'ACCOUNT_ON_FILE';
+  memberName?: string;
+}
+
+export interface ChurnRiskMember {
+  id: string;
+  tenantId: string;
+  memberName: string;
+  phone: string;
+  email: string;
+  membershipTier: MembershipTier;
+  monthlyDuesCents: number;
+  daysSinceLastVisit: number;
+  attendanceTrend: 'STEEP_DROP' | 'MODERATE_DECLINE' | 'FAILED_BILLING';
+  riskScorePct: number;
+  suggestedAction: string;
+  lastVisitDate: string;
+}
+
+export interface GymEquipment {
+  id: string;
+  tenantId: string;
+  name: string;
+  category: 'BARBELLS_PLATES' | 'CABLE_STATIONS' | 'CARDIO' | 'RECOVERY_SUITE' | 'RACKS';
+  brand: string;
+  serialNumber: string;
+  location: string;
+  status: 'OPERATIONAL' | 'NEEDS_SERVICE' | 'OUT_OF_ORDER';
+  lastServiceDate: string;
+  nextServiceDueDate: string;
+  notes: string;
+}
