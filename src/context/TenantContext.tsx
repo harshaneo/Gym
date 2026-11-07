@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   Tenant, Coach, CRMLead, Appointment, Promotion, Member, GroupClass, CheckInLog,
-  LeadStage, AppointmentStatus, MembershipTier
+  LeadStage, AppointmentStatus, MembershipTier,
+  UserRole, PlatformTenantInfo, PlatformFeatureFlag, PlatformAuditLog
 } from '../types';
 import { 
   INITIAL_TENANTS, INITIAL_COACHES, INITIAL_LEADS, INITIAL_APPOINTMENTS, 
-  INITIAL_PROMOTIONS, INITIAL_MEMBERS, INITIAL_CLASSES, INITIAL_CHECKINS 
+  INITIAL_PROMOTIONS, INITIAL_MEMBERS, INITIAL_CLASSES, INITIAL_CHECKINS,
+  INITIAL_PLATFORM_TENANTS, INITIAL_FEATURE_FLAGS, INITIAL_PLATFORM_AUDIT_LOGS
 } from '../data/mockData';
 
 interface TenantContextType {
@@ -15,6 +17,18 @@ interface TenantContextType {
   updateTenantBranding: (updated: Partial<Tenant>) => void;
   createNewTenant: (tenantData: Omit<Tenant, 'id' | 'currentOccupancy' | 'mrr'>) => void;
   
+  // Role & Permission Separation
+  currentRole: UserRole;
+  setRole: (role: UserRole) => void;
+
+  // Platform Super-Admin Control Plane
+  platformTenants: PlatformTenantInfo[];
+  featureFlags: PlatformFeatureFlag[];
+  toggleFeatureFlag: (flagId: string) => void;
+  platformAuditLogs: PlatformAuditLog[];
+  verifyCustomDomainDns: (tenantId: string) => void;
+  provisionPlatformTenant: (data: { name: string; slug: string; customDomain?: string; plan: 'STARTER' | 'GROWTH' | 'ENTERPRISE' }) => void;
+
   // Scoped Data
   coaches: Coach[];
   leads: CRMLead[];
@@ -59,12 +73,111 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [tenants, setTenants] = useState<Tenant[]>(INITIAL_TENANTS);
   const [currentTenantSlug, setCurrentTenantSlug] = useState<string>('titan');
   const [viewMode, setViewMode] = useState<'ADMIN_WORKSPACE' | 'PUBLIC_MEMBER_PORTAL'>('ADMIN_WORKSPACE');
+  const [currentRole, setCurrentRole] = useState<UserRole>('GYM_OWNER');
+
+  // Separated Platform Admin Control Plane State
+  const [platformTenants, setPlatformTenants] = useState<PlatformTenantInfo[]>(INITIAL_PLATFORM_TENANTS);
+  const [featureFlags, setFeatureFlags] = useState<PlatformFeatureFlag[]>(INITIAL_FEATURE_FLAGS);
+  const [platformAuditLogs, setPlatformAuditLogs] = useState<PlatformAuditLog[]>(INITIAL_PLATFORM_AUDIT_LOGS);
 
   const [allLeads, setAllLeads] = useState<CRMLead[]>(INITIAL_LEADS);
   const [allAppointments, setAllAppointments] = useState<Appointment[]>(INITIAL_APPOINTMENTS);
   const [allPromotions, setAllPromotions] = useState<Promotion[]>(INITIAL_PROMOTIONS);
   const [allMembers, setAllMembers] = useState<Member[]>(INITIAL_MEMBERS);
   const [allCheckIns, setAllCheckIns] = useState<CheckInLog[]>(INITIAL_CHECKINS);
+
+  const setRole = (role: UserRole) => {
+    setCurrentRole(role);
+    if (role === 'MEMBER_PORTAL') {
+      setViewMode('PUBLIC_MEMBER_PORTAL');
+    } else {
+      setViewMode('ADMIN_WORKSPACE');
+    }
+  };
+
+  const toggleFeatureFlag = (flagId: string) => {
+    setFeatureFlags(prev => prev.map(f => {
+      if (f.id === flagId) {
+        const nextState = !f.enabled;
+        const log: PlatformAuditLog = {
+          id: `audit-${Date.now()}`,
+          timestamp: new Date().toISOString().substring(11, 19) + ' UTC',
+          actor: 'platform.ops@ironpulse.app',
+          action: 'FEATURE_FLAG_TOGGLED',
+          details: `Flag "${f.name}" was ${nextState ? 'ENABLED' : 'DISABLED'} platform-wide.`,
+        };
+        setPlatformAuditLogs(logs => [log, ...logs]);
+        return { ...f, enabled: nextState };
+      }
+      return f;
+    }));
+  };
+
+  const verifyCustomDomainDns = (tenantId: string) => {
+    setPlatformTenants(prev => prev.map(t => {
+      if (t.id === tenantId) {
+        const log: PlatformAuditLog = {
+          id: `audit-${Date.now()}`,
+          timestamp: new Date().toISOString().substring(11, 19) + ' UTC',
+          actor: 'platform.security@ironpulse.app',
+          action: 'DNS_CHALLENGE_VERIFIED',
+          targetTenant: t.name,
+          details: `Custom domain ${t.customDomain || t.subdomain} CNAME verified with edge SSL active.`,
+        };
+        setPlatformAuditLogs(logs => [log, ...logs]);
+        return { ...t, customDomainStatus: 'VERIFIED' };
+      }
+      return t;
+    }));
+  };
+
+  const provisionPlatformTenant = (data: { name: string; slug: string; customDomain?: string; plan: 'STARTER' | 'GROWTH' | 'ENTERPRISE' }) => {
+    const newId = `tenant-${data.slug}-${Date.now().toString().slice(-4)}`;
+    const newPlatformTenant: PlatformTenantInfo = {
+      id: newId,
+      name: data.name,
+      slug: data.slug,
+      subdomain: `${data.slug}.ironpulse.app`,
+      customDomain: data.customDomain,
+      customDomainStatus: data.customDomain ? 'PENDING_DNS' : 'NONE',
+      plan: data.plan,
+      mrr: data.plan === 'ENTERPRISE' ? 28450 : data.plan === 'GROWTH' ? 14800 : 7900,
+      memberCount: 1,
+      healthStatus: 'HEALTHY',
+      createdAt: new Date().toISOString().substring(0, 10),
+    };
+    setPlatformTenants(prev => [...prev, newPlatformTenant]);
+
+    // Also register in workspace tenants
+    const newTenant: Tenant = {
+      id: newId,
+      slug: data.slug,
+      subdomain: `${data.slug}.ironpulse.app`,
+      name: data.name,
+      tagline: 'High-performance training and dedicated coaching.',
+      primaryColor: '#f4f5f6',
+      secondaryColor: '#9aa0a6',
+      address: '100 Fitness Way',
+      phone: '+1 (555) 019-2831',
+      email: `contact@${data.slug}.com`,
+      fireCodeMaxCapacity: 100,
+      currentOccupancy: 0,
+      customDomain: data.customDomain,
+      currency: 'USD',
+      mrr: newPlatformTenant.mrr,
+    };
+    setTenants(prev => [...prev, newTenant]);
+
+    const log: PlatformAuditLog = {
+      id: `audit-${Date.now()}`,
+      timestamp: new Date().toISOString().substring(11, 19) + ' UTC',
+      actor: 'platform.provisioning@ironpulse.app',
+      action: 'TENANT_PROVISIONED',
+      targetTenant: data.name,
+      details: `New gym workspace provisioned on ${data.plan} tier with subdomain ${data.slug}.ironpulse.app.`,
+    };
+    setPlatformAuditLogs(logs => [log, ...logs]);
+  };
 
   // Detect subdomain from URL if available
   useEffect(() => {
@@ -500,6 +613,14 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       refillPunchPass,
       viewMode,
       setViewMode,
+      currentRole,
+      setRole,
+      platformTenants,
+      featureFlags,
+      toggleFeatureFlag,
+      platformAuditLogs,
+      verifyCustomDomainDns,
+      provisionPlatformTenant,
     }}>
       {children}
     </TenantContext.Provider>

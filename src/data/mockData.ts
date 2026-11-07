@@ -488,3 +488,108 @@ export const INITIAL_CHECKINS: CheckInLog[] = [
     message: 'Access Granted - Standard Weight Floor & Classes',
   },
 ];
+
+
+export const INITIAL_PLATFORM_TENANTS: import('../types').PlatformTenantInfo[] = [
+  {
+    id: 'tenant-titan-01',
+    name: 'Titan Strength & Conditioning',
+    slug: 'titan',
+    subdomain: 'titan.ironpulse.app',
+    customDomain: 'titanstrength.com',
+    customDomainStatus: 'VERIFIED',
+    plan: 'ENTERPRISE',
+    mrr: 28450,
+    memberCount: 312,
+    healthStatus: 'HEALTHY',
+    createdAt: '2025-08-15',
+  },
+  {
+    id: 'tenant-apex-02',
+    name: 'Apex Athletic Club',
+    slug: 'apex',
+    subdomain: 'apex.ironpulse.app',
+    customDomain: 'apexathletic.com',
+    customDomainStatus: 'VERIFIED',
+    plan: 'GROWTH',
+    mrr: 41200,
+    memberCount: 245,
+    healthStatus: 'HEALTHY',
+    createdAt: '2025-10-01',
+  },
+  {
+    id: 'tenant-metabolic-03',
+    name: 'Metabolic Lab',
+    slug: 'metabolic',
+    subdomain: 'metabolic.ironpulse.app',
+    customDomain: 'metaboliclab.io',
+    customDomainStatus: 'PENDING_DNS',
+    plan: 'STARTER',
+    mrr: 14800,
+    memberCount: 128,
+    healthStatus: 'HEALTHY',
+    createdAt: '2026-01-12',
+  },
+];
+
+export const INITIAL_FEATURE_FLAGS: import('../types').PlatformFeatureFlag[] = [
+  {
+    id: 'flag-1',
+    key: 'turnstile_relay_iot',
+    name: 'Hardware Turnstile Relay Controller',
+    description: 'Hardware relay bridge over WebSockets for physical gym turnstiles and maglocks.',
+    enabled: true,
+    rolloutPct: 100,
+  },
+  {
+    id: 'flag-2',
+    key: 'direct_stripe_payouts',
+    name: 'Direct Stripe Connect Payouts',
+    description: 'Automated 24h coach commission split transfers via Stripe Custom Accounts.',
+    enabled: true,
+    rolloutPct: 100,
+  },
+  {
+    id: 'flag-3',
+    key: 'ai_member_churn_prediction',
+    name: 'Attendance Churn Predictor',
+    description: 'Flags members dropping below 1.2 check-ins/week for proactive retention outreach.',
+    enabled: true,
+    rolloutPct: 50,
+  },
+  {
+    id: 'flag-4',
+    key: 'sms_booking_reminders',
+    name: 'Twilio Multi-Tenant SMS Alerts',
+    description: 'Automated 2-hour pre-session SMS reminder dispatch with one-tap confirmations.',
+    enabled: false,
+    rolloutPct: 0,
+  },
+];
+
+export const INITIAL_PLATFORM_AUDIT_LOGS: import('../types').PlatformAuditLog[] = [
+  {
+    id: 'audit-1',
+    timestamp: '14:28:11 UTC',
+    actor: 'platform.security@ironpulse.app',
+    action: 'DNS_CHALLENGE_VERIFIED',
+    targetTenant: 'Titan Strength & Conditioning',
+    details: 'Custom domain titanstrength.com CNAME resolved and Let\'s Encrypt Wildcard issued.',
+  },
+  {
+    id: 'audit-2',
+    timestamp: '11:05:44 UTC',
+    actor: 'system.billing@ironpulse.app',
+    action: 'INVOICE_SETTLED',
+    targetTenant: 'Apex Athletic Club',
+    details: 'SaaS Enterprise Subscription $499.00 billed successfully via Stripe Invoice #inv_8829.',
+  },
+  {
+    id: 'audit-3',
+    timestamp: '09:14:02 UTC',
+    actor: 'support.lead@ironpulse.app',
+    action: 'SUPPORT_GRANT_ACCESSED',
+    targetTenant: 'Metabolic Lab',
+    details: 'Temporary 30m read-only support session authorized for ticket #SUP-4102 (Turnstile latency).',
+  },
+];
