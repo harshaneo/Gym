@@ -22,3 +22,7 @@ Execute tasks with the decisive completeness of Claude Opus: complete changes in
 - Do not hedge, ask for approval on minor aesthetic choices, or leave half-finished `TODO` comments.
 - Make the clean, industry-standard engineering call directly and ship it.
 - Never write meta-commentary bragging about avoiding AI slop. Simply build quiet, polished software.
+
+## 4. Context Budget & Token Saver Protocol (`tks`)
+- For commands that generate large outputs (`find`, verbose tests, `git diff`, directory listings), prefix with `tks` (e.g., `tks git diff` or `tks npm test`) to prune boilerplate lines while retaining error traces.
+- Keep read file ranges tight: read specific line windows (`StartLine`/`EndLine`) when inspecting large files to protect the LLM context window.
