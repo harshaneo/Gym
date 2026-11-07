@@ -49,7 +49,7 @@ export const PublicPortalPreview: React.FC = () => {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       {/* Public Subdomain Navigation Bar */}
-      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-[41px] z-40 backdrop-blur-xl bg-zinc-950/80">
+      <header className="border-b border-white/10 px-4 sm:px-6 py-3.5 flex items-center justify-between sticky top-14 z-40 backdrop-blur-xl bg-zinc-950/90">
         <div className="flex items-center gap-3">
           <div 
             className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-lg"

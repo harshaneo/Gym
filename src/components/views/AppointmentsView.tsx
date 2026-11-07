@@ -153,7 +153,7 @@ export const AppointmentsView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Sub-view switcher */}
           <div className="flex items-center p-1 bg-[#111317] border border-white/[0.08] rounded-lg">
             <button

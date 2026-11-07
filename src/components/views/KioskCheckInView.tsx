@@ -90,7 +90,7 @@ export const KioskCheckInView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           {/* Mode Switcher */}
           <div className="flex items-center p-1 bg-[#111317] border border-white/[0.08] rounded-lg">
             <button
@@ -129,13 +129,13 @@ export const KioskCheckInView: React.FC = () => {
       </div>
 
       {/* Main Search Panel */}
-      <div className="bg-[#111317] border border-white/[0.08] rounded-xl p-6">
+      <div className="bg-[#111317] border border-white/[0.08] rounded-xl p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-medium text-zinc-300 mb-1.5">
               Member Identification (Barcode / PIN / Phone / Name)
             </label>
-            <div className="relative flex items-center">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 autoFocus
@@ -150,7 +150,7 @@ export const KioskCheckInView: React.FC = () => {
               />
               <button
                 type="submit"
-                className="absolute right-2 px-4 py-1.5 rounded-md text-xs font-medium bg-white hover:bg-zinc-200 text-zinc-950 tactile-btn flex items-center gap-1.5"
+                className="px-4 py-3 sm:py-2.5 rounded-lg text-xs font-semibold bg-white hover:bg-zinc-200 text-zinc-950 tactile-btn flex items-center justify-center gap-1.5 shrink-0"
               >
                 <Search className="w-3.5 h-3.5" />
                 <span>{checkMode === 'CHECK_IN' ? 'Verify Entry' : 'Record Exit'}</span>
