@@ -39,6 +39,19 @@ export interface Tenant {
   heroHeadline?: string;
   heroSubhead?: string;
   heroImage?: string;
+  galleryImages?: string[];
+  trainerHighlights?: {
+    name: string;
+    role: string;
+    specialty: string;
+    image: string;
+  }[];
+  reviews?: {
+    author: string;
+    rating: number;
+    quote: string;
+    achievement: string;
+  }[];
   amenities?: string[];
   showOccupancyLive?: boolean;
 

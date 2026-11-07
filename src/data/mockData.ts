@@ -23,7 +23,47 @@ export const INITIAL_TENANTS: Tenant[] = [
     themePreset: 'MONOCHROME_INDUSTRIAL',
     heroHeadline: 'Colombo’s Premier Strength & Conditioning Club',
     heroSubhead: 'Competition Olympic lifting platforms, calibrated Eleiko plates, and dedicated personal training suites in the heart of Colombo 07.',
-    heroImage: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80',
+    heroImage: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1400&q=85',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=800&q=80'
+    ],
+    trainerHighlights: [
+      {
+        name: 'Coach Roshan Wijesinghe',
+        role: 'Head of Strength & Conditioning',
+        specialty: 'National Powerlifting Coach · Bio-mechanics',
+        image: 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        name: 'Kavindi Perera',
+        role: 'Senior Olympic Lifting Specialist',
+        specialty: 'Snatch & Clean Technique · Mobility',
+        image: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?auto=format&fit=crop&w=600&q=80'
+      },
+      {
+        name: 'Devin Fernando',
+        role: 'Physiology & Metabolic Conditioning',
+        specialty: 'VO2 Max Conditioning · Functional Hypertrophy',
+        image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=600&q=80'
+      }
+    ],
+    reviews: [
+      {
+        author: 'Malik Jayawardena',
+        rating: 5,
+        quote: 'The standard of barbell equipment here is unmatched in Sri Lanka. 8 calibrated Eleiko platforms and zero waiting.',
+        achievement: 'Added 40kg to deadlift in 6 months'
+      },
+      {
+        author: 'Dr. Shenali Mendis',
+        rating: 5,
+        quote: 'Clean, professional atmosphere with cold plunge and sauna. Best recovery routine after morning strength blocks.',
+        achievement: 'Member for 14 months'
+      }
+    ],
     amenities: ['Eleiko Calibrated Plates', '8 Power Racks & Deadlift Platforms', 'Dumbbells to 50kg', 'Cold Plunge 10°C & Finnish Sauna', 'InBody 570 Body Scan', 'Shake Bar (Dymatize & Optimum)'],
     showOccupancyLive: true,
     bankDetails: {
