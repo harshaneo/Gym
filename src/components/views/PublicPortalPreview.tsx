@@ -8,7 +8,8 @@ import {
   UserCheck,
   ArrowRight,
   X,
-  Mail
+  Mail,
+  ShieldCheck
 } from 'lucide-react';
 
 export const PublicPortalPreview: React.FC = () => {
@@ -92,12 +93,24 @@ export const PublicPortalPreview: React.FC = () => {
     },
   ];
 
+  // Customizer dynamic fields
+  const heroImage = currentTenant.heroImage || 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80';
+  const headline = currentTenant.heroHeadline || currentTenant.tagline;
+  const subhead = currentTenant.heroSubhead || 'High-performance barbell training, dedicated coaching, and verified capacity caps.';
+  const amenities = currentTenant.amenities || ['Eleiko Barbell Stations', 'Contrast Cold Plunge', 'Infrared Sauna Suite', 'InBody 570'];
+
   return (
     <div className="min-h-screen bg-[#08090b] text-zinc-100">
-      {/* Navigation */}
-      <nav className="border-b border-white/[0.06] px-5 sm:px-8 py-3 flex items-center justify-between sticky top-14 z-30 bg-[#08090b]/95 backdrop-blur-lg">
+      {/* Top Navigation */}
+      <nav className="border-b border-white/[0.06] px-5 sm:px-8 py-3 flex items-center justify-between sticky top-12 z-30 bg-[#08090b]/95 backdrop-blur-lg">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-white text-zinc-950 font-bold text-xs flex items-center justify-center">
+          <div 
+            className="w-8 h-8 rounded-lg font-bold text-xs flex items-center justify-center transition-colors"
+            style={{ 
+              backgroundColor: currentTenant.primaryColor || '#ffffff',
+              color: currentTenant.primaryColor === '#ffffff' || currentTenant.primaryColor === '#f4f5f6' ? '#09090b' : '#ffffff'
+            }}
+          >
             {currentTenant.name.charAt(0)}
           </div>
           <div>
@@ -107,49 +120,89 @@ export const PublicPortalPreview: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-4 text-xs text-zinc-400 mr-3">
-            <span className="hover:text-white cursor-pointer transition-colors">Classes</span>
-            <span className="hover:text-white cursor-pointer transition-colors">Pricing</span>
-            <span className="hover:text-white cursor-pointer transition-colors">Contact</span>
-          </div>
+          {currentTenant.showOccupancyLive !== false && (
+            <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#0e1014] border border-white/[0.04] text-[11px] font-mono text-zinc-400">
+              <span className="w-1.5 h-1.5 rounded-full dot-live" />
+              <span>{currentTenant.currentOccupancy} On Floor</span>
+            </div>
+          )}
+
           <button 
             onClick={() => setCheckoutModalPlan('Member Portal Sign-In')}
             className="btn-secondary px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5"
           >
             <UserCheck className="w-3.5 h-3.5" />
-            Sign In
+            <span>Sign In</span>
           </button>
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="px-6 sm:px-8 pt-16 sm:pt-24 pb-12 max-w-5xl mx-auto">
-        <div className="max-w-2xl">
-          <div className="flex items-center gap-2 mb-5">
-            <span className="w-1.5 h-1.5 rounded-full dot-live" />
-            <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
-              {currentTenant.currentOccupancy} members on floor · Open now
+      {/* Hero Section with Custom Owner Photography */}
+      <section className="relative px-6 sm:px-8 pt-12 pb-16 max-w-5xl mx-auto">
+        {/* Cover Photo Banner */}
+        <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] mb-10 h-72 sm:h-96 group shadow-2xl">
+          <img 
+            src={heroImage} 
+            alt={currentTenant.name}
+            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 brightness-[0.72]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-[#08090b]/40 to-transparent" />
+
+          {/* Floating Badges */}
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-black/60 backdrop-blur-md text-white border border-white/10 flex items-center gap-1.5">
+              <ShieldCheck className="w-3 h-3 text-emerald-400" />
+              Verified Facility Subdomain
             </span>
+
+            {currentTenant.customDomain && (
+              <span className="px-2.5 py-1 rounded-full text-[10px] font-mono bg-black/60 backdrop-blur-md text-zinc-300 border border-white/10 hidden sm:inline">
+                {currentTenant.customDomain}
+              </span>
+            )}
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight leading-[1.1]">
-            {currentTenant.tagline}
-          </h2>
+          {/* Bottom Overlay Title */}
+          <div className="absolute bottom-6 left-6 right-6 max-w-2xl">
+            <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight leading-tight">
+              {headline}
+            </h2>
+          </div>
+        </div>
 
-          <p className="mt-5 text-[15px] leading-relaxed text-zinc-400 max-w-xl">
-            Serious coaching. Open barbell platforms. Verified capacity limits so you always have space to train.
+        {/* Narrative & Value Props */}
+        <div className="max-w-3xl">
+          <p className="text-[15px] leading-relaxed text-zinc-300">
+            {subhead}
           </p>
 
+          {/* Amenities Strip */}
+          <div className="mt-5 flex flex-wrap gap-2">
+            {amenities.map((item, idx) => (
+              <span 
+                key={idx}
+                className="card px-3 py-1 rounded-md text-xs text-zinc-300 flex items-center gap-1.5"
+              >
+                <Check className="w-3.5 h-3.5 text-zinc-500" />
+                <span>{item}</span>
+              </span>
+            ))}
+          </div>
+
+          {/* Call to action & Location */}
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <button
-              onClick={() => setCheckoutModalPlan('Gold Unlimited')}
+              onClick={() => setCheckoutModalPlan('Gold Unlimited Pass')}
               className="btn-primary px-5 py-2.5 rounded-lg text-sm flex items-center gap-2"
             >
               Start Membership
               <ArrowRight className="w-4 h-4" />
             </button>
-            <button className="btn-secondary px-4 py-2.5 rounded-lg text-sm">
-              Book a Tour
+            <button 
+              onClick={() => setCheckoutModalPlan('Facility Tour Request')}
+              className="btn-secondary px-4 py-2.5 rounded-lg text-sm"
+            >
+              Schedule Facility Tour
             </button>
           </div>
 
@@ -174,9 +227,9 @@ export const PublicPortalPreview: React.FC = () => {
               <TicketPercent className="w-4 h-4 text-zinc-400" />
             </div>
             <div>
-              <h3 className="font-medium text-sm text-white">Have a promo code?</h3>
+              <h3 className="font-medium text-sm text-white">Have a referral voucher?</h3>
               <p className="text-[11px] text-zinc-500 mt-0.5">
-                Try <span className="font-mono text-zinc-300">IRON20</span> or <span className="font-mono text-zinc-300">FIRSTMONTH50</span>
+                Active codes: <span className="font-mono text-zinc-300">IRON20</span> (20% off) or <span className="font-mono text-zinc-300">FIRSTMONTH50</span> ($50 credit)
               </p>
             </div>
           </div>
@@ -198,7 +251,7 @@ export const PublicPortalPreview: React.FC = () => {
         {appliedPromo && (
           <div className="mt-2 badge-success px-3 py-2 rounded-lg text-xs font-mono flex items-center gap-2">
             <Check className="w-3.5 h-3.5" />
-            <span><strong>{appliedPromo.code}</strong> applied — savings reflected in pricing below</span>
+            <span><strong>{appliedPromo.code}</strong> applied — voucher deduction applied to membership below</span>
           </div>
         )}
 
@@ -207,11 +260,11 @@ export const PublicPortalPreview: React.FC = () => {
         )}
       </section>
 
-      {/* Pricing */}
+      {/* Membership Tiers */}
       <section className="max-w-5xl mx-auto px-6 sm:px-8 pb-16">
         <div className="mb-8">
-          <h3 className="text-xl font-semibold text-white tracking-tight">Membership</h3>
-          <p className="text-sm text-zinc-500 mt-1">Simple pricing. Cancel anytime.</p>
+          <h3 className="text-xl font-semibold text-white tracking-tight">Membership Rates</h3>
+          <p className="text-sm text-zinc-500 mt-1">Transparent monthly rates. No contract freeze or cancellation fees.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -226,7 +279,7 @@ export const PublicPortalPreview: React.FC = () => {
             >
               {plan.featured && (
                 <span className="absolute -top-2.5 left-5 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-white text-zinc-950">
-                  Popular
+                  Most Popular
                 </span>
               )}
 
@@ -262,7 +315,7 @@ export const PublicPortalPreview: React.FC = () => {
                     : 'btn-secondary'
                 }`}
               >
-                {plan.featured ? 'Start Membership' : `Select ${plan.name}`}
+                {plan.featured ? 'Enroll in Membership' : `Choose ${plan.name}`}
               </button>
             </div>
           ))}
@@ -272,8 +325,8 @@ export const PublicPortalPreview: React.FC = () => {
       {/* Class Timetable */}
       <section className="max-w-5xl mx-auto px-6 sm:px-8 pb-20">
         <div className="mb-6">
-          <h3 className="text-xl font-semibold text-white tracking-tight">Today's Classes</h3>
-          <p className="text-sm text-zinc-500 mt-1">Live capacity from the front-desk scheduler</p>
+          <h3 className="text-xl font-semibold text-white tracking-tight">Today's Class Schedule</h3>
+          <p className="text-sm text-zinc-500 mt-1">Live booking status synced from our front desk reception.</p>
         </div>
 
         <div className="card overflow-hidden divide-y divide-white/[0.04]">
@@ -294,10 +347,13 @@ export const PublicPortalPreview: React.FC = () => {
 
                 <div className="flex items-center gap-3 shrink-0">
                   <span className={`font-mono text-xs tabular-nums ${spotsLeft <= 2 ? 'text-amber-400' : 'text-zinc-400'}`}>
-                    {spotsLeft > 0 ? `${spotsLeft} spots` : 'Full'}
+                    {spotsLeft > 0 ? `${spotsLeft} spots open` : 'Roster Full'}
                   </span>
-                  <button className="btn-secondary px-2.5 py-1 rounded-md text-[11px]">
-                    Book
+                  <button 
+                    onClick={() => setCheckoutModalPlan(`Class Booking: ${cls.name}`)}
+                    className="btn-secondary px-2.5 py-1 rounded-md text-[11px]"
+                  >
+                    Reserve
                   </button>
                 </div>
               </div>
@@ -311,7 +367,7 @@ export const PublicPortalPreview: React.FC = () => {
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-600">
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 rounded bg-white text-zinc-950 font-bold text-[8px] flex items-center justify-center">IP</div>
-            <span className="font-mono">Powered by IronPulse</span>
+            <span className="font-mono">IronPulse Subdomain Gateway</span>
           </div>
           <div className="flex items-center gap-4 font-mono">
             <span>{currentTenant.subdomain}</span>
@@ -336,13 +392,13 @@ export const PublicPortalPreview: React.FC = () => {
             </div>
 
             <p className="text-xs text-zinc-400">
-              Sign in to link your digital pass to your smartphone wallet.
+              Sign in to link your digital pass to your smartphone wallet and turnstile barcode PIN.
             </p>
 
             <div className="space-y-2.5">
               <button 
                 onClick={() => {
-                  alert(`Registered for ${checkoutModalPlan}. PIN code sent via SMS.`);
+                  alert(`Confirmed enrollment for ${checkoutModalPlan}. Digital turnstile PIN dispatched via SMS.`);
                   setCheckoutModalPlan(null);
                 }}
                 className="btn-primary w-full py-2.5 rounded-lg text-xs flex items-center justify-center gap-2"
@@ -352,7 +408,7 @@ export const PublicPortalPreview: React.FC = () => {
               </button>
               <button 
                 onClick={() => {
-                  alert(`Registered for ${checkoutModalPlan}. PIN code sent via SMS.`);
+                  alert(`Confirmed enrollment for ${checkoutModalPlan}. Digital turnstile PIN dispatched via SMS.`);
                   setCheckoutModalPlan(null);
                 }}
                 className="btn-secondary w-full py-2.5 rounded-lg text-xs flex items-center justify-center gap-2"

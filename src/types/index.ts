@@ -15,6 +15,8 @@ export type DiscountType = 'PERCENTAGE' | 'FIXED_AMOUNT';
 export type MembershipTier = 'GOLD_UNLIMITED' | 'BLACK_CARD_ALL_ACCESS' | 'OFF_PEAK' | 'PUNCH_CARD_10';
 export type MemberStatus = 'ACTIVE' | 'PAST_DUE' | 'FROZEN' | 'EXPIRED';
 
+export type ThemePreset = 'MONOCHROME_INDUSTRIAL' | 'NEO_EMERALD' | 'AMBER_FORGE' | 'OBSIDIAN_SLATE';
+
 export interface Tenant {
   id: string;
   slug: string; // e.g. 'titan', 'apex', 'metabolic'
@@ -31,6 +33,14 @@ export interface Tenant {
   customDomain?: string;
   currency: string;
   mrr: number;
+  
+  // Customization & CMS fields
+  themePreset?: ThemePreset;
+  heroHeadline?: string;
+  heroSubhead?: string;
+  heroImage?: string;
+  amenities?: string[];
+  showOccupancyLive?: boolean;
 }
 
 export interface Coach {

@@ -7,8 +7,8 @@ export const INITIAL_TENANTS: Tenant[] = [
     subdomain: 'titan.ironpulse.app',
     name: 'Titan Strength & Conditioning',
     tagline: 'Raw power, functional hypertrophy & elite coaching.',
-    primaryColor: '#f97316', // Orange
-    secondaryColor: '#ea580c',
+    primaryColor: '#f4f5f6', // Neutral monochrome
+    secondaryColor: '#a1a1aa',
     address: '428 Industrial Blvd, Suite 100, Austin TX',
     phone: '+1 (512) 890-4412',
     email: 'contact@titanstrength.com',
@@ -17,6 +17,12 @@ export const INITIAL_TENANTS: Tenant[] = [
     customDomain: 'titanstrength.com',
     currency: 'USD',
     mrr: 28450,
+    themePreset: 'MONOCHROME_INDUSTRIAL',
+    heroHeadline: 'Dedicated Strength & Powerlifting Facility',
+    heroSubhead: 'Calibrated Eleiko barbell platforms, competition benches, and metric-tracked periodization. Capped occupancy so you never wait for a squat rack.',
+    heroImage: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80',
+    amenities: ['Eleiko Calibrated Plates', '6 Dedicated Deadlift Platforms', 'Dumbbells to 150 lbs', 'Contrast Cold Plunge', 'InBody 570 Screen'],
+    showOccupancyLive: true,
   },
   {
     id: 'tenant-apex-02',
@@ -33,6 +39,12 @@ export const INITIAL_TENANTS: Tenant[] = [
     currentOccupancy: 28,
     currency: 'USD',
     mrr: 41200,
+    themePreset: 'NEO_EMERALD',
+    heroHeadline: 'Oceanfront High-Performance & Recovery Club',
+    heroSubhead: 'Where athletic conditioning meets clinical recovery. Infrared sauna suites, contrast baths, and custom metabolic programming.',
+    heroImage: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=1200&q=80',
+    amenities: ['Infrared Sauna Suite', 'Contrast Cold Plunge 42°F', 'Woodway Curve Treadmills', 'Normatec Compression Lounge', 'Private Showers & Towels'],
+    showOccupancyLive: true,
   },
   {
     id: 'tenant-metabolic-03',
@@ -40,8 +52,8 @@ export const INITIAL_TENANTS: Tenant[] = [
     subdomain: 'metabolic.ironpulse.app',
     name: 'Metabolic Lab',
     tagline: 'Heart-rate telemetry, HIIT conditioning & VO2 testing.',
-    primaryColor: '#06b6d4', // Cyan
-    secondaryColor: '#0891b2',
+    primaryColor: '#f59e0b', // Amber forge
+    secondaryColor: '#d97706',
     address: '150 Techway Ave, Boulder CO',
     phone: '+1 (720) 555-0199',
     email: 'frontdesk@metaboliclab.io',
@@ -49,6 +61,12 @@ export const INITIAL_TENANTS: Tenant[] = [
     currentOccupancy: 35,
     currency: 'USD',
     mrr: 22800,
+    themePreset: 'AMBER_FORGE',
+    heroHeadline: 'Biometric Telemetry & VO2 Max Conditioning',
+    heroSubhead: 'Real-time heart rate zone displays, anaerobic threshold testing, and high-intensity interval conditioning programmed by exercise physiologists.',
+    heroImage: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1200&q=80',
+    amenities: ['Polar Team Telemetry ECG', 'Concept2 BikeErg & SkiErg Grid', 'VO2 Metabolic Cart', 'Keiser Pneumatic Racks', 'Electrolyte Refuel Bar'],
+    showOccupancyLive: true,
   },
 ];
 
