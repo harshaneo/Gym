@@ -216,43 +216,50 @@ export const PublicPortalPreview: React.FC = () => {
 
       {/* Cinematic Hero Header with Immersive Photography */}
       <section className="relative px-4 sm:px-8 pt-8 pb-12 max-w-6xl mx-auto w-full">
-        <div className="relative rounded-2xl overflow-hidden border border-white/[0.10] shadow-2xl bg-[#0c0e12] min-h-[460px] sm:min-h-[520px] flex flex-col justify-end p-6 sm:p-12">
+        <div className="relative rounded-2xl overflow-hidden border border-white/[0.10] shadow-2xl bg-[#0c0e12] min-h-[500px] sm:min-h-[560px] flex flex-col justify-between p-6 sm:p-12">
           {/* Main Backdrop Image */}
           <img 
             src={heroImage} 
             alt={currentTenant.name}
-            className="absolute inset-0 w-full h-full object-cover brightness-[0.55] contrast-[1.08] saturate-[1.1] scale-[1.01]"
+            className="absolute inset-0 w-full h-full object-cover brightness-[0.48] contrast-[1.08] saturate-[1.1] scale-[1.01]"
           />
 
           {/* Vignette Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-[#08090b]/50 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#08090b]/80 via-transparent to-transparent hidden md:block" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#08090b] via-[#08090b]/60 to-transparent" />
+          <div className="absolute inset-0 bg-radial from-transparent to-[#08090b]/80" />
 
-          {/* Top Floating Tags */}
-          <div className="absolute top-5 left-5 right-5 flex items-center justify-between z-10">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-black/75 backdrop-blur-md text-white border border-white/15 flex items-center gap-1.5 shadow-sm">
+          {/* Top Bar inside Hero with clear padding to avoid overlaps */}
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pt-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-black/80 backdrop-blur-md text-zinc-200 border border-white/15 flex items-center gap-1.5 shadow-sm">
                 <ShieldCheck className="w-3.5 h-3.5 text-zinc-300" />
-                <span>Official Club Subdomain</span>
+                <span>Verified Facility</span>
+              </span>
+              <span className="px-3 py-1 rounded-full text-[10px] font-mono bg-black/80 backdrop-blur-md text-zinc-300 border border-white/15 shadow-sm">
+                {currentTenant.subdomain}
               </span>
               {currentTenant.customDomain && (
-                <span className="px-3 py-1 rounded-full text-[10px] font-mono bg-black/75 backdrop-blur-md text-zinc-300 border border-white/15 hidden sm:inline shadow-sm">
+                <span className="px-3 py-1 rounded-full text-[10px] font-mono bg-black/80 backdrop-blur-md text-zinc-300 border border-white/15 hidden sm:inline shadow-sm">
                   {currentTenant.customDomain}
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
-              <Clock className="w-3 h-3 text-zinc-400" />
-              <span>Open 05:30 – 22:00</span>
+            <div className="flex items-center gap-2 text-xs font-mono text-zinc-300 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 shadow-sm">
+              <Clock className="w-3.5 h-3.5 text-zinc-400" />
+              <span>05:30 – 22:00</span>
             </div>
           </div>
 
-          {/* Hero Content */}
-          <div className="relative z-10 max-w-3xl space-y-4">
-            <span className="text-xs font-mono uppercase tracking-widest text-zinc-400 font-semibold">
-              {currentTenant.tagline}
-            </span>
+          {/* Centered Editorial Hero Content */}
+          <div className="relative z-10 max-w-3xl mx-auto text-center flex flex-col items-center py-10 sm:py-16 space-y-4">
+            {/* Centered Tagline Pill */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/15 shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 text-zinc-300" />
+              <span className="text-xs font-mono uppercase tracking-widest text-zinc-200 font-semibold">
+                {currentTenant.tagline}
+              </span>
+            </div>
 
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.08] text-balance">
               {headline}
@@ -262,8 +269,8 @@ export const PublicPortalPreview: React.FC = () => {
               {subhead}
             </p>
 
-            {/* CTAs */}
-            <div className="pt-4 flex flex-wrap items-center gap-3">
+            {/* Centered CTAs */}
+            <div className="pt-4 flex flex-wrap items-center justify-center gap-3">
               <button
                 onClick={() => setCheckoutModalPlan('Gold Unlimited Pass')}
                 className="btn-primary px-6 py-3 rounded-lg text-xs font-semibold flex items-center gap-2 shadow-lg"
@@ -273,14 +280,14 @@ export const PublicPortalPreview: React.FC = () => {
               </button>
               <button 
                 onClick={() => setCheckoutModalPlan('Private Facility Tour')}
-                className="btn-secondary px-5 py-3 rounded-lg text-xs font-medium backdrop-blur-md bg-black/40 hover:bg-black/60"
+                className="btn-secondary px-5 py-3 rounded-lg text-xs font-medium backdrop-blur-md bg-black/50 hover:bg-black/70 border border-white/15"
               >
                 Schedule Private Tour
               </button>
             </div>
 
-            {/* Location & Quick Meta */}
-            <div className="pt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-zinc-400 font-mono border-t border-white/[0.08]">
+            {/* Centered Location & Phone Meta */}
+            <div className="pt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-400 font-mono border-t border-white/[0.10] w-full max-w-xl">
               <span className="flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-zinc-400" />
                 {currentTenant.address}
@@ -291,6 +298,9 @@ export const PublicPortalPreview: React.FC = () => {
               </span>
             </div>
           </div>
+
+          {/* Bottom spacing spacer */}
+          <div className="hidden sm:block h-2" />
         </div>
       </section>
 
