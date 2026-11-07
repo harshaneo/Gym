@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source "../index.html";
+@source "../src/**/*.{js,ts,jsx,tsx}";
 
 @layer base {
   :root {
@@ -34,6 +36,11 @@
 }
 
 /* Professional enterprise surfaces */
+.glass-card {
+  background: #111317;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .pro-card {
   background: #101216;
   border: 1px solid rgba(255, 255, 255, 0.07);

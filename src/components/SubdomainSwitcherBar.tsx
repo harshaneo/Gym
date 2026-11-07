@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTenant } from '../context/TenantContext';
-import { ChevronDown, Plus, ExternalLink, Check, Menu, ShieldCheck } from 'lucide-react';
+import { ChevronDown, Plus, Check, Menu, ShieldCheck, Globe, LayoutDashboard } from 'lucide-react';
 
 interface SubdomainSwitcherBarProps {
   onOpenMobileDrawer?: () => void;
@@ -136,25 +136,40 @@ export const SubdomainSwitcherBar: React.FC<SubdomainSwitcherBarProps> = ({ onOp
           </div>
         </div>
 
-        {/* Right: Public Member Portal Toggle + Isolated Platform Control Plane Button */}
+        {/* Right: Live Gym Website vs Workspace Console Switcher + Platform Control Plane */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Member Portal Button */}
-          <button
-            onClick={() => setViewMode(viewMode === 'PUBLIC_MEMBER_PORTAL' ? 'ADMIN_WORKSPACE' : 'PUBLIC_MEMBER_PORTAL')}
-            className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 border transition-all tactile-btn ${
-              viewMode === 'PUBLIC_MEMBER_PORTAL'
-                ? 'bg-white text-zinc-950 font-semibold border-white shadow-sm'
-                : 'bg-[#111317] text-zinc-300 border-white/[0.08] hover:text-white'
-            }`}
-          >
-            <span className="hidden sm:inline">
-              {viewMode === 'PUBLIC_MEMBER_PORTAL' ? 'Exit Portal' : 'Member Portal'}
-            </span>
-            <span className="sm:hidden">
-              {viewMode === 'PUBLIC_MEMBER_PORTAL' ? 'Exit' : 'Portal'}
-            </span>
-            <ExternalLink className="w-3 h-3 opacity-70" />
-          </button>
+          <div className="inline-flex p-0.5 rounded-lg bg-[#111317] border border-white/[0.08]">
+            <button
+              onClick={() => {
+                if (currentRole === 'PLATFORM_SUPER_ADMIN') setRole('GYM_OWNER');
+                setViewMode('PUBLIC_MEMBER_PORTAL');
+              }}
+              className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                viewMode === 'PUBLIC_MEMBER_PORTAL' && currentRole !== 'PLATFORM_SUPER_ADMIN'
+                  ? 'bg-white text-zinc-950 font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Gym Website</span>
+              <span className="sm:hidden">Website</span>
+            </button>
+            <button
+              onClick={() => {
+                if (currentRole === 'PLATFORM_SUPER_ADMIN') setRole('GYM_OWNER');
+                setViewMode('ADMIN_WORKSPACE');
+              }}
+              className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                viewMode === 'ADMIN_WORKSPACE' && currentRole !== 'PLATFORM_SUPER_ADMIN'
+                  ? 'bg-white text-zinc-950 font-semibold shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Workspace</span>
+              <span className="sm:hidden">Console</span>
+            </button>
+          </div>
 
           {/* Discrete Platform Control Plane Access */}
           <button
