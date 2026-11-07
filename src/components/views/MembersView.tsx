@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { useTenant } from '../../context/TenantContext';
-import { 
-  Search, 
-  Filter
-} from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 
 export const MembersView: React.FC = () => {
   const { members } = useTenant();
@@ -23,43 +20,51 @@ export const MembersView: React.FC = () => {
     return matchesSearch && matchesTier && matchesStatus;
   });
 
+  const activeCount = members.filter(m => m.status === 'ACTIVE').length;
+  const inFacilityCount = members.filter(m => m.isInsideFacility).length;
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-white/[0.06]">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight">Members & Passes</h2>
-          <p className="text-xs text-zinc-400 mt-0.5">
-            Active membership rosters, punch card allowances, and billing renewal dates.
+          <h1 className="text-lg font-semibold text-white tracking-tight">Members & Passes</h1>
+          <p className="text-[13px] text-zinc-400 mt-0.5">
+            Active membership roster, punch card balances, and keycard barcode assignments.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1.5 rounded-lg bg-[#111317] border border-white/[0.08] text-xs font-mono text-zinc-300">
-            Total Members: <strong className="text-white">{members.length}</strong>
+          <div className="card px-3 py-1.5 text-xs flex items-center gap-2">
+            <span className="text-zinc-500 font-mono text-[11px]">Total:</span>
+            <span className="font-mono font-medium text-white tabular-nums">{members.length}</span>
+            <span className="text-zinc-600">·</span>
+            <span className="text-zinc-400 font-mono text-[11px]">{activeCount} active</span>
+            <span className="text-zinc-600">·</span>
+            <span className="text-emerald-400 font-mono text-[11px]">{inFacilityCount} in facility</span>
           </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-[#111317] p-3 rounded-xl border border-white/[0.08]">
-        <div className="relative flex-1 min-w-[200px] max-w-md">
+      <div className="card p-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="relative flex-1 min-w-[220px] max-w-md">
           <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search member by name, PIN, or email..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="w-full pro-input rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder:text-zinc-500"
+            className="w-full input pl-9 pr-3 py-1.5 text-xs"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <Filter className="w-3.5 h-3.5 text-zinc-400" />
+          <Filter className="w-3.5 h-3.5 text-zinc-500" />
           <select
             value={tierFilter}
             onChange={e => setTierFilter(e.target.value)}
-            className="bg-[#181b21] border border-white/[0.08] rounded-md px-2.5 py-1 text-xs text-zinc-200 focus:outline-none"
+            className="input px-2.5 py-1 text-xs"
           >
             <option value="ALL">All Tiers</option>
             <option value="GOLD_UNLIMITED">Gold Unlimited</option>
@@ -71,7 +76,7 @@ export const MembersView: React.FC = () => {
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
-            className="bg-[#181b21] border border-white/[0.08] rounded-md px-2.5 py-1 text-xs text-zinc-200 focus:outline-none"
+            className="input px-2.5 py-1 text-xs"
           >
             <option value="ALL">All Statuses</option>
             <option value="ACTIVE">Active</option>
@@ -81,8 +86,8 @@ export const MembersView: React.FC = () => {
         </div>
       </div>
 
-      {/* Members Directory Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Members Table / Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
         {filteredMembers.map(m => {
           const isActive = m.status === 'ACTIVE';
           const isPastDue = m.status === 'PAST_DUE';
@@ -90,67 +95,68 @@ export const MembersView: React.FC = () => {
           return (
             <div 
               key={m.id}
-              className={`bg-[#111317] rounded-xl p-4 border transition-colors ${
-                isPastDue ? 'border-red-500/30 bg-[#171214]' : 'border-white/[0.08] hover:border-white/[0.14]'
+              className={`card p-4 flex flex-col justify-between transition-colors ${
+                isPastDue ? 'border-red-500/25 bg-red-950/10' : ''
               }`}
             >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`px-2 py-0.5 rounded-[4px] text-[10px] font-mono font-medium leading-none ${
-                      isActive ? 'badge-status-approved' :
-                      isPastDue ? 'badge-status-denied' :
-                      'badge-status-neutral'
-                    }`}>
-                      {m.status}
-                    </span>
-                    {m.isInsideFacility && (
-                      <span className="px-1.5 py-0.2 rounded text-[10px] font-mono font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                        In Facility
+              <div>
+                <div className="flex items-start justify-between gap-3 mb-2.5">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-medium leading-none ${
+                        isActive ? 'badge-success' :
+                        isPastDue ? 'badge-danger' : 'badge-neutral'
+                      }`}>
+                        {m.status}
                       </span>
-                    )}
+                      {m.isInsideFacility && (
+                        <span className="badge-info px-1.5 py-0.5 rounded text-[10px] font-mono font-medium">
+                          In Facility
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="font-semibold text-[13px] text-white">{m.fullName}</h3>
+                    <div className="text-[11px] text-zinc-400 font-mono mt-0.5">
+                      {m.membershipTier.replace(/_/g, ' ')}
+                    </div>
                   </div>
-                  <h3 className="font-semibold text-sm text-white">{m.fullName}</h3>
-                  <div className="text-xs text-zinc-300 font-mono mt-0.5">
-                    {m.membershipTier.replace(/_/g, ' ')}
+
+                  <div className="text-right">
+                    <div className="text-[9px] text-zinc-500 font-mono uppercase">Keycard PIN</div>
+                    <div className="font-mono text-xs font-semibold text-white bg-[#0e1014] px-2 py-0.5 rounded border border-white/[0.08] mt-0.5">
+                      {m.barcodePin}
+                    </div>
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <div className="text-[10px] text-zinc-500 font-mono">Barcode PIN</div>
-                  <div className="font-mono text-xs font-bold text-white bg-zinc-900 px-2 py-1 rounded border border-white/10 mt-0.5">
-                    {m.barcodePin}
+                {/* Punch card remaining passes */}
+                {typeof m.remainingCredits === 'number' && (
+                  <div className="card p-2 mb-2.5 text-xs flex items-center justify-between text-amber-300 font-mono">
+                    <span className="text-[11px] text-zinc-400">Remaining Credits:</span>
+                    <span className="font-bold">{m.remainingCredits} Passes</span>
+                  </div>
+                )}
+
+                {/* Contact & Billing info */}
+                <div className="bg-[#0e1014] rounded-lg p-2.5 text-[11px] space-y-1 font-mono text-zinc-400 border border-white/[0.04]">
+                  <div className="flex items-center justify-between truncate">
+                    <span className="text-zinc-600">Email:</span>
+                    <span className="text-zinc-300 truncate max-w-[160px]">{m.email}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-600">Phone:</span>
+                    <span className="text-zinc-300">{m.phone}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-600">Renewal:</span>
+                    <span className={isPastDue ? 'text-red-300 font-bold' : 'text-zinc-300'}>{m.renewalDate}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Punch card status if applicable */}
-              {typeof m.remainingCredits === 'number' && (
-                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-2.5 mb-3 text-xs flex items-center justify-between text-amber-300">
-                  <span>Remaining Punch Credits:</span>
-                  <span className="font-mono font-bold text-sm">{m.remainingCredits} Passes</span>
-                </div>
-              )}
-
-              {/* Contact info & Dates */}
-              <div className="bg-zinc-900/60 rounded-xl p-3 text-xs space-y-1.5 font-mono text-zinc-300 border border-white/5">
-                <div className="flex items-center justify-between truncate">
-                  <span className="text-zinc-500">Email:</span>
-                  <span className="truncate max-w-[170px]">{m.email}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-zinc-500">Phone:</span>
-                  <span>{m.phone}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-zinc-500">Next Renewal:</span>
-                  <span className={isPastDue ? 'text-red-400 font-bold' : 'text-zinc-300'}>{m.renewalDate}</span>
-                </div>
-              </div>
-
-              <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-zinc-500">
-                <span>Member since {m.joinedDate}</span>
-                <span>Emergency: {m.emergencyContact.split('(')[0]}</span>
+              <div className="mt-3 pt-2.5 border-t border-white/[0.04] flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+                <span>Joined {m.joinedDate}</span>
+                <span>Emergency: {m.emergencyContact.split('(')[0].trim()}</span>
               </div>
             </div>
           );
