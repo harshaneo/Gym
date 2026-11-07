@@ -21,7 +21,6 @@ export const SubdomainSwitcherBar: React.FC<SubdomainSwitcherBarProps> = ({ onOp
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showNewModal, setShowNewModal] = useState(false);
 
-  // New gym form
   const [newGymName, setNewGymName] = useState('');
   const [newSlug, setNewSlug] = useState('');
   const [newTagline, setNewTagline] = useState('');
@@ -55,123 +54,120 @@ export const SubdomainSwitcherBar: React.FC<SubdomainSwitcherBarProps> = ({ onOp
 
   return (
     <>
-      <header className="h-14 bg-[#090a0c] border-b border-white/[0.08] px-3 md:px-6 flex items-center justify-between sticky top-0 z-40 select-none">
-        {/* Left: Hamburger (mobile) + Logo + Gym Name over Subdomain URL */}
-        <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
-          {/* Mobile hamburger menu */}
-          <button
-            onClick={onOpenMobileDrawer}
-            className="md:hidden p-2 rounded-lg bg-[#111317] border border-white/[0.08] text-zinc-300 hover:text-white shrink-0 active:scale-95 transition-transform"
-            aria-label="Open Menu"
-          >
-            <Menu className="w-4 h-4" />
-          </button>
+      <header className="h-12 bg-[#08090b] border-b border-white/[0.06] px-3 md:px-5 flex items-center justify-between sticky top-0 z-40 select-none">
+        {/* Left: Hamburger + Brand + Workspace Picker */}
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          {onOpenMobileDrawer && (
+            <button
+              onClick={onOpenMobileDrawer}
+              className="md:hidden p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/[0.04] transition-colors shrink-0"
+              aria-label="Open Menu"
+            >
+              <Menu className="w-4 h-4" />
+            </button>
+          )}
 
-          {/* Platform Brand Mark */}
-          <div className="flex items-center gap-2 pr-2 sm:pr-3 border-r border-white/[0.08] shrink-0">
-            <div className="w-7 h-7 rounded-lg bg-white text-zinc-950 font-extrabold flex items-center justify-center text-xs tracking-tighter shadow-sm">
+          {/* Brand */}
+          <div className="flex items-center gap-2 pr-2.5 border-r border-white/[0.06] shrink-0">
+            <div className="w-6 h-6 rounded-md bg-white text-zinc-950 font-bold flex items-center justify-center text-[9px] tracking-tighter">
               IP
             </div>
-            <span className="font-bold text-white text-xs tracking-tight hidden lg:inline">IRONPULSE</span>
+            <span className="font-semibold text-white text-[11px] tracking-tight hidden lg:inline">IRONPULSE</span>
           </div>
 
-          {/* Workspace Switcher: Primary Anchor = Gym Name, Subdomain URL underneath */}
+          {/* Workspace Picker */}
           <div className="relative min-w-0">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-[#111317] hover:bg-[#16191f] text-left border border-white/[0.08] transition-all tactile-btn max-w-[210px] sm:max-w-xs"
+              className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-white/[0.04] text-left transition-colors max-w-[200px] sm:max-w-xs"
             >
               <div className="flex flex-col min-w-0">
-                <span className="font-semibold text-xs text-white leading-tight flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full dot-approved shrink-0" />
+                <span className="font-medium text-[12px] text-white leading-tight flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full dot-live shrink-0" />
                   <span className="truncate">{currentTenant.name}</span>
                 </span>
-                <span className="font-mono text-[10px] text-zinc-400 leading-tight mt-0.5 truncate">
+                <span className="font-mono text-[10px] text-zinc-500 leading-tight mt-px truncate pl-3">
                   {currentTenant.subdomain}
                 </span>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-zinc-400 shrink-0 ml-0.5" />
+              <ChevronDown className="w-3 h-3 text-zinc-500 shrink-0" />
             </button>
 
             {dropdownOpen && (
-              <div className="absolute left-0 top-full mt-1.5 w-72 bg-[#111317] border border-white/[0.1] rounded-xl shadow-2xl py-1 z-50 animate-in fade-in-50 zoom-in-95">
-                <div className="px-3.5 py-2 text-[10px] font-mono uppercase tracking-wider text-zinc-400 border-b border-white/[0.06]">
-                  Select Workspace
-                </div>
-                <div className="py-1 max-h-64 overflow-y-auto">
-                  {allTenants.map(t => (
-                    <button
-                      key={t.id}
-                      onClick={() => {
-                        switchTenant(t.slug);
-                        setDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3.5 py-2.5 flex items-center justify-between text-xs transition-colors ${
-                        t.slug === currentTenant.slug ? 'bg-white/[0.06] text-white' : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
-                      }`}
-                    >
-                      <div className="flex flex-col min-w-0">
-                        <span className="font-medium text-white text-xs truncate">{t.name}</span>
-                        <span className="font-mono text-[10px] text-zinc-400 mt-0.5 truncate">{t.subdomain}</span>
-                      </div>
-                      {t.slug === currentTenant.slug && <Check className="w-3.5 h-3.5 text-zinc-200 shrink-0 ml-2" />}
-                    </button>
-                  ))}
-                </div>
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
+                <div className="absolute left-0 top-full mt-1 w-64 card rounded-lg shadow-2xl py-1 z-50">
+                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-zinc-500 border-b border-white/[0.04]">
+                    Workspaces
+                  </div>
+                  <div className="py-0.5 max-h-56 overflow-y-auto">
+                    {allTenants.map(t => (
+                      <button
+                        key={t.id}
+                        onClick={() => {
+                          switchTenant(t.slug);
+                          setDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 flex items-center justify-between text-xs transition-colors ${
+                          t.slug === currentTenant.slug ? 'bg-white/[0.04] text-white' : 'text-zinc-400 hover:text-white hover:bg-white/[0.02]'
+                        }`}
+                      >
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-medium text-[12px] text-white truncate">{t.name}</span>
+                          <span className="font-mono text-[10px] text-zinc-500 mt-px truncate">{t.subdomain}</span>
+                        </div>
+                        {t.slug === currentTenant.slug && <Check className="w-3.5 h-3.5 text-zinc-300 shrink-0 ml-2" />}
+                      </button>
+                    ))}
+                  </div>
 
-                <div className="pt-1 border-t border-white/[0.06]">
-                  <button
-                    onClick={() => {
-                      setDropdownOpen(false);
-                      setShowNewModal(true);
-                    }}
-                    className="w-full text-left px-3.5 py-2.5 text-xs text-zinc-300 hover:text-white hover:bg-white/[0.04] flex items-center gap-2 font-medium"
-                  >
-                    <Plus className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>Create Gym Workspace...</span>
-                  </button>
+                  <div className="pt-0.5 border-t border-white/[0.04]">
+                    <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        setShowNewModal(true);
+                      }}
+                      className="w-full text-left px-3 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/[0.02] flex items-center gap-2 font-medium transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Create Workspace
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>
 
-        {/* Right: Live Gym Website vs Workspace Console Switcher + Platform Control Plane */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="inline-flex p-0.5 rounded-lg bg-[#111317] border border-white/[0.08]">
+        {/* Right: View Switcher + Control Plane */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          <div className="segmented-control inline-flex">
             <button
               onClick={() => {
-                if (currentRole === 'PLATFORM_SUPER_ADMIN') setRole('GYM_OWNER');
+                if (isPlatformControl) setRole('GYM_OWNER');
                 setViewMode('PUBLIC_MEMBER_PORTAL');
               }}
-              className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-                viewMode === 'PUBLIC_MEMBER_PORTAL' && currentRole !== 'PLATFORM_SUPER_ADMIN'
-                  ? 'bg-white text-zinc-950 font-semibold shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
+              className={`segmented-tab flex items-center gap-1.5 ${
+                viewMode === 'PUBLIC_MEMBER_PORTAL' && !isPlatformControl ? 'segmented-tab-active' : ''
               }`}
             >
               <Globe className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Gym Website</span>
-              <span className="sm:hidden">Website</span>
+              <span className="hidden sm:inline">Website</span>
             </button>
             <button
               onClick={() => {
-                if (currentRole === 'PLATFORM_SUPER_ADMIN') setRole('GYM_OWNER');
+                if (isPlatformControl) setRole('GYM_OWNER');
                 setViewMode('ADMIN_WORKSPACE');
               }}
-              className={`px-2.5 sm:px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-                viewMode === 'ADMIN_WORKSPACE' && currentRole !== 'PLATFORM_SUPER_ADMIN'
-                  ? 'bg-white text-zinc-950 font-semibold shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
+              className={`segmented-tab flex items-center gap-1.5 ${
+                viewMode === 'ADMIN_WORKSPACE' && !isPlatformControl ? 'segmented-tab-active' : ''
               }`}
             >
               <LayoutDashboard className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Workspace</span>
-              <span className="sm:hidden">Console</span>
             </button>
           </div>
 
-          {/* Discrete Platform Control Plane Access */}
           <button
             onClick={() => {
               if (isPlatformControl) {
@@ -180,39 +176,36 @@ export const SubdomainSwitcherBar: React.FC<SubdomainSwitcherBarProps> = ({ onOp
                 setRole('PLATFORM_SUPER_ADMIN');
               }
             }}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 border transition-all tactile-btn ${
+            className={`p-1.5 rounded-md transition-colors ${
               isPlatformControl
-                ? 'bg-purple-950/80 text-purple-200 border-purple-500/40 shadow-sm'
-                : 'bg-[#111317] text-zinc-400 border-white/[0.08] hover:text-zinc-200'
+                ? 'bg-white/[0.08] text-white'
+                : 'text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04]'
             }`}
-            title="Separated Platform Control Plane (Cross-Tenant Infrastructure)"
+            title="Platform Control Plane"
           >
-            <ShieldCheck className="w-4 h-4 text-purple-400" />
-            <span className="hidden md:inline text-[11px] font-mono">Control Plane</span>
+            <ShieldCheck className="w-4 h-4" />
           </button>
         </div>
       </header>
 
-      {/* Create Gym Workspace Modal */}
+      {/* Create Workspace Modal */}
       {showNewModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#111317] border border-white/[0.1] rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl animate-in zoom-in-95">
+        <div className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4">
+          <div className="modal-panel w-full max-w-md rounded-xl p-6 space-y-4">
             <div>
-              <h3 className="text-sm font-semibold text-white">Create Gym Workspace</h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                Each gym receives an isolated workspace database and subdomain URL.
+              <h3 className="text-sm font-semibold text-white">Create Workspace</h3>
+              <p className="text-xs text-zinc-500 mt-0.5">
+                Each gym gets an isolated database and subdomain.
               </p>
             </div>
 
-            <form onSubmit={handleCreateGym} className="space-y-4">
+            <form onSubmit={handleCreateGym} className="space-y-3">
               <div>
-                <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1">
-                  Gym Name
-                </label>
+                <label className="block text-[11px] font-medium text-zinc-400 mb-1">Gym Name</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Iron Forge Athletics"
+                  placeholder="Iron Forge Athletics"
                   value={newGymName}
                   onChange={e => {
                     setNewGymName(e.target.value);
@@ -220,15 +213,13 @@ export const SubdomainSwitcherBar: React.FC<SubdomainSwitcherBarProps> = ({ onOp
                       setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, ''));
                     }
                   }}
-                  className="w-full bg-[#090a0c] border border-white/[0.08] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
+                  className="w-full input rounded-lg px-3 py-2 text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1">
-                  Subdomain Slug
-                </label>
-                <div className="flex items-center bg-[#090a0c] border border-white/[0.08] rounded-lg px-3 py-2 text-xs focus-within:border-white/30">
+                <label className="block text-[11px] font-medium text-zinc-400 mb-1">Subdomain</label>
+                <div className="flex items-center input rounded-lg px-3 py-2 text-xs focus-within:border-white/[0.28]">
                   <input
                     type="text"
                     required
@@ -237,48 +228,44 @@ export const SubdomainSwitcherBar: React.FC<SubdomainSwitcherBarProps> = ({ onOp
                     onChange={e => setNewSlug(e.target.value)}
                     className="w-full bg-transparent text-white focus:outline-none font-mono"
                   />
-                  <span className="text-zinc-400 font-mono text-xs">.ironpulse.app</span>
+                  <span className="text-zinc-500 font-mono text-xs shrink-0">.ironpulse.app</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1">
-                  Tagline
-                </label>
+                <label className="block text-[11px] font-medium text-zinc-400 mb-1">Tagline</label>
                 <input
                   type="text"
-                  placeholder="e.g. Elite barbell strength & conditioning."
+                  placeholder="Elite barbell strength & conditioning."
                   value={newTagline}
                   onChange={e => setNewTagline(e.target.value)}
-                  className="w-full bg-[#090a0c] border border-white/[0.08] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
+                  className="w-full input rounded-lg px-3 py-2 text-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1">
-                  Facility Fire-Code Max Capacity
-                </label>
+                <label className="block text-[11px] font-medium text-zinc-400 mb-1">Max Capacity</label>
                 <input
                   type="number"
                   min="20"
                   max="1000"
                   value={newCapacity}
                   onChange={e => setNewCapacity(e.target.value)}
-                  className="w-full bg-[#090a0c] border border-white/[0.08] rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-white/30"
+                  className="w-full input rounded-lg px-3 py-2 text-xs font-mono"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-2">
+              <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowNewModal(false)}
-                  className="px-3.5 py-2 rounded-lg bg-zinc-800 text-zinc-300 text-xs font-medium hover:bg-zinc-700"
+                  className="px-3 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-lg bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 tactile-btn"
+                  className="btn-primary px-4 py-2 rounded-lg text-xs"
                 >
                   Create Workspace
                 </button>

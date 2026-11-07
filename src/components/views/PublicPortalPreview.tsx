@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useTenant } from '../../context/TenantContext';
 import { 
-  Dumbbell, 
   MapPin, 
   Phone, 
   Check, 
   TicketPercent, 
-  Sparkles, 
-  UserCheck
+  UserCheck,
+  ArrowRight,
+  X,
+  Mail
 } from 'lucide-react';
 
 export const PublicPortalPreview: React.FC = () => {
@@ -46,320 +47,318 @@ export const PublicPortalPreview: React.FC = () => {
     return basePrice;
   };
 
+  const PLANS = [
+    {
+      id: 'gold',
+      tier: 'Unlimited',
+      name: 'Gold Unlimited',
+      price: 189,
+      interval: 'month',
+      featured: true,
+      features: [
+        '24/7 keyless facility access',
+        'Unlimited group class timetable',
+        'Monthly InBody movement screen',
+        'Open barbell platform use',
+      ],
+    },
+    {
+      id: 'black',
+      tier: 'VIP',
+      name: 'Black Card',
+      price: 249,
+      interval: 'month',
+      featured: false,
+      features: [
+        'All Gold benefits included',
+        'Cold plunge & infrared sauna',
+        'Priority class reservations',
+        'Dedicated locker & towel service',
+      ],
+    },
+    {
+      id: 'punch',
+      tier: 'Flexible',
+      name: '10-Visit Card',
+      price: 160,
+      interval: 'pack',
+      featured: false,
+      features: [
+        '10 drop-in session credits',
+        'Any group class booking',
+        '90-day validity window',
+        'No recurring commitment',
+      ],
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      {/* Public Subdomain Navigation Bar */}
-      <header className="border-b border-white/10 px-4 sm:px-6 py-3.5 flex items-center justify-between sticky top-14 z-40 backdrop-blur-xl bg-zinc-950/90">
+    <div className="min-h-screen bg-[#08090b] text-zinc-100">
+      {/* Navigation */}
+      <nav className="border-b border-white/[0.06] px-5 sm:px-8 py-3 flex items-center justify-between sticky top-14 z-30 bg-[#08090b]/95 backdrop-blur-lg">
         <div className="flex items-center gap-3">
-          <div 
-            className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-lg"
-            style={{ backgroundColor: currentTenant.primaryColor }}
-          >
-            <Dumbbell className="w-5 h-5" />
+          <div className="w-8 h-8 rounded-lg bg-white text-zinc-950 font-bold text-xs flex items-center justify-center">
+            {currentTenant.name.charAt(0)}
           </div>
           <div>
-            <h1 className="font-extrabold text-base text-white tracking-tight">{currentTenant.name}</h1>
-            <span className="font-mono text-[11px] text-zinc-400">{currentTenant.subdomain}</span>
+            <h1 className="font-semibold text-sm text-white tracking-tight leading-tight">{currentTenant.name}</h1>
+            <span className="font-mono text-[10px] text-zinc-500">{currentTenant.subdomain}</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-1.5 text-xs text-zinc-400 font-mono">
-            <span className="w-1.5 h-1.5 rounded-full dot-approved" />
-            <span>{currentTenant.currentOccupancy} Members on Floor</span>
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-4 text-xs text-zinc-400 mr-3">
+            <span className="hover:text-white cursor-pointer transition-colors">Classes</span>
+            <span className="hover:text-white cursor-pointer transition-colors">Pricing</span>
+            <span className="hover:text-white cursor-pointer transition-colors">Contact</span>
           </div>
-
           <button 
             onClick={() => setCheckoutModalPlan('Member Portal Sign-In')}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-white border border-white/10 tactile-btn flex items-center gap-1.5"
+            className="btn-secondary px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5"
           >
             <UserCheck className="w-3.5 h-3.5" />
-            Member Login
+            Sign In
           </button>
         </div>
-      </header>
+      </nav>
 
-      {/* Hero Section */}
-      <section className="relative px-6 py-16 sm:py-24 max-w-6xl mx-auto text-center overflow-hidden">
-        <div 
-          className="absolute left-1/2 -top-24 -translate-x-1/2 w-96 h-96 rounded-full blur-3xl opacity-25 pointer-events-none"
-          style={{ backgroundColor: currentTenant.primaryColor }}
-        />
-
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/5 border border-white/10 mb-6">
-          <Sparkles className="w-3.5 h-3.5 text-orange-400" />
-          <span>Austin's Dedicated Strength & Conditioning Facility</span>
-        </div>
-
-        <h2 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight max-w-4xl mx-auto">
-          {currentTenant.tagline}
-        </h2>
-
-        <p className="mt-4 text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto">
-          Access high-caliber coaching, open barbell platforms, and metabolic conditioning. No crowd queues, verified capacity caps.
-        </p>
-
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-xs text-zinc-400 font-mono">
-          <div className="flex items-center gap-1.5 bg-zinc-900 px-3 py-1.5 rounded-lg border border-white/5">
-            <MapPin className="w-3.5 h-3.5 text-orange-400" />
-            {currentTenant.address}
-          </div>
-          <div className="flex items-center gap-1.5 bg-zinc-900 px-3 py-1.5 rounded-lg border border-white/5">
-            <Phone className="w-3.5 h-3.5 text-orange-400" />
-            {currentTenant.phone}
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive Promotions Banner */}
-      <section className="max-w-4xl mx-auto px-6 mb-12">
-        <div className="bg-[#111317] rounded-xl p-5 border border-white/[0.08]">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1">
-                <TicketPercent className="w-3.5 h-3.5 text-zinc-400" />
-                Voucher Redemption
-              </div>
-              <h3 className="font-semibold text-sm text-white">Have a Gym Voucher or Referral Code?</h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                Active codes: <strong className="text-white font-mono">IRON20</strong> (20% off) or <strong className="text-white font-mono">FIRSTMONTH50</strong> ($50 voucher)
-              </p>
-            </div>
-
-            <form onSubmit={handleApplyPromo} className="flex items-center gap-2 shrink-0">
-              <input
-                type="text"
-                placeholder="PROMO CODE"
-                value={promoInput}
-                onChange={e => setPromoInput(e.target.value.toUpperCase())}
-                className="bg-[#0d0f12] border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono uppercase text-white placeholder:text-zinc-600 focus:outline-none w-36"
-              />
-              <button
-                type="submit"
-                className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-zinc-200 text-zinc-950 tactile-btn"
-              >
-                Apply
-              </button>
-            </form>
-          </div>
-
-          {appliedPromo && (
-            <div className="mt-3 p-2 rounded-[4px] badge-status-approved text-xs font-mono flex items-center gap-2 animate-in fade-in">
-              <Check className="w-3.5 h-3.5 text-[#4ade80]" />
-              Promotion Code <strong>{appliedPromo.code}</strong> Applied! Savings will be calculated at checkout.
-            </div>
-          )}
-
-          {promoError && (
-            <div className="mt-3 text-red-400 text-xs font-mono">{promoError}</div>
-          )}
-        </div>
-      </section>
-
-      {/* Membership Tiers & Pricing */}
-      <section className="max-w-6xl mx-auto px-6 py-8">
-        <div className="text-center mb-10">
-          <h3 className="text-2xl font-bold text-white tracking-tight">Membership Plans</h3>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-1">Simple transparent memberships. Zero cancellation fees.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Tier 1: Gold Unlimited */}
-          <div className="bg-[#111317] rounded-2xl p-6 border border-white/[0.12] flex flex-col justify-between relative">
-            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-white text-zinc-950 font-semibold">
-              Most Popular
+      {/* Hero */}
+      <section className="px-6 sm:px-8 pt-16 sm:pt-24 pb-12 max-w-5xl mx-auto">
+        <div className="max-w-2xl">
+          <div className="flex items-center gap-2 mb-5">
+            <span className="w-1.5 h-1.5 rounded-full dot-live" />
+            <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
+              {currentTenant.currentOccupancy} members on floor · Open now
             </span>
+          </div>
 
-            <div>
-              <div className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1">UNLIMITED ACCESS</div>
-              <h4 className="text-lg font-bold text-white mb-1.5">Gold Unlimited Pass</h4>
-              <p className="text-xs text-zinc-400 mb-4">Complete 24/7 access to all barbell zones, platforms & open gym.</p>
+          <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight leading-[1.1]">
+            {currentTenant.tagline}
+          </h2>
 
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-3xl font-bold text-white font-mono">
-                  ${calculatePrice(189).toFixed(0)}
-                </span>
-                <span className="text-xs text-zinc-400 font-mono">/ month</span>
-                {appliedPromo && (
-                  <span className="text-xs text-zinc-500 line-through font-mono ml-2">$189</span>
-                )}
-              </div>
+          <p className="mt-5 text-[15px] leading-relaxed text-zinc-400 max-w-xl">
+            Serious coaching. Open barbell platforms. Verified capacity limits so you always have space to train.
+          </p>
 
-              <ul className="space-y-2.5 text-xs text-zinc-300">
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                  <span>24/7 Keyless Pass & Check-In</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                  <span>Unlimited Group Fitness Timetable</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                  <span>1 Free Monthly InBody Movement Screen</span>
-                </li>
-              </ul>
-            </div>
-
+          <div className="mt-8 flex flex-wrap items-center gap-3">
             <button
-              onClick={() => setCheckoutModalPlan('Gold Unlimited Pass')}
-              className="mt-6 w-full py-2.5 rounded-lg text-xs font-medium bg-white hover:bg-zinc-200 text-zinc-950 tactile-btn"
+              onClick={() => setCheckoutModalPlan('Gold Unlimited')}
+              className="btn-primary px-5 py-2.5 rounded-lg text-sm flex items-center gap-2"
             >
               Start Membership
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <button className="btn-secondary px-4 py-2.5 rounded-lg text-sm">
+              Book a Tour
             </button>
           </div>
 
-          {/* Tier 2: Black Card All-Access */}
-          <div className="bg-[#111317] rounded-2xl p-6 border border-white/[0.08] flex flex-col justify-between">
-            <div>
-              <div className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1">VIP & RECOVERY</div>
-              <h4 className="text-lg font-bold text-white mb-1.5">Black Card All-Access</h4>
-              <p className="text-xs text-zinc-400 mb-4">Unlimited gym, priority class booking & cold plunge recovery suite.</p>
-
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-3xl font-bold text-white font-mono">
-                  ${calculatePrice(249).toFixed(0)}
-                </span>
-                <span className="text-xs text-zinc-400 font-mono">/ month</span>
-              </div>
-
-              <ul className="space-y-2.5 text-xs text-zinc-300">
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                  <span>All Gold Benefits Included</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                  <span>Cold Plunge & Infrared Sauna Suite</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                  <span>Dedicated Private Locker & Towel Service</span>
-                </li>
-              </ul>
-            </div>
-
-            <button
-              onClick={() => setCheckoutModalPlan('Black Card All-Access')}
-              className="mt-6 w-full py-2.5 rounded-lg text-xs font-medium bg-[#16191f] hover:bg-[#1e222b] text-zinc-200 border border-white/[0.08] tactile-btn"
-            >
-              Select Black Card
-            </button>
-          </div>
-
-          {/* Tier 3: 10-Class Punch Card */}
-          <div className="bg-[#111317] rounded-2xl p-6 border border-white/[0.08] flex flex-col justify-between">
-            <div>
-              <div className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1">FLEXIBLE PASS</div>
-              <h4 className="text-lg font-bold text-white mb-1.5">10-Class Punch Card</h4>
-              <p className="text-xs text-zinc-400 mb-4">Ideal for travelers or hybrid athletes. Valid for 90 days.</p>
-
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-3xl font-bold text-white font-mono">
-                  ${calculatePrice(160).toFixed(0)}
-                </span>
-                <span className="text-xs text-zinc-400 font-mono">/ pack</span>
-              </div>
-
-              <ul className="space-y-2.5 text-xs text-zinc-300">
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                  <span>10 Drop-In Scans</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                  <span>Book Any Group Fitness Timetable</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                  <span>Valid Within 90-Day Window</span>
-                </li>
-              </ul>
-            </div>
-
-            <button
-              onClick={() => setCheckoutModalPlan('10-Class Punch Card')}
-              className="mt-6 w-full py-2.5 rounded-lg text-xs font-medium bg-[#16191f] hover:bg-[#1e222b] text-zinc-200 border border-white/[0.08] tactile-btn"
-            >
-              Buy Punch Card
-            </button>
+          <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-zinc-500 font-mono">
+            <span className="flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-zinc-600" />
+              {currentTenant.address}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Phone className="w-3.5 h-3.5 text-zinc-600" />
+              {currentTenant.phone}
+            </span>
           </div>
         </div>
       </section>
 
-      {/* Group Class Timetable Preview */}
-      <section className="max-w-5xl mx-auto px-6 py-12">
-        <div className="text-center mb-8">
-          <h3 className="text-2xl font-extrabold text-white">Daily Class Timetable</h3>
-          <p className="text-xs text-zinc-400 mt-1">Live capacity sync directly from front-desk scheduler</p>
+      {/* Promo Bar */}
+      <section className="max-w-5xl mx-auto px-6 sm:px-8 mb-16">
+        <div className="card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0">
+              <TicketPercent className="w-4 h-4 text-zinc-400" />
+            </div>
+            <div>
+              <h3 className="font-medium text-sm text-white">Have a promo code?</h3>
+              <p className="text-[11px] text-zinc-500 mt-0.5">
+                Try <span className="font-mono text-zinc-300">IRON20</span> or <span className="font-mono text-zinc-300">FIRSTMONTH50</span>
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleApplyPromo} className="flex items-center gap-2 shrink-0">
+            <input
+              type="text"
+              placeholder="CODE"
+              value={promoInput}
+              onChange={e => setPromoInput(e.target.value.toUpperCase())}
+              className="input rounded-lg px-3 py-1.5 text-xs font-mono uppercase w-28"
+            />
+            <button type="submit" className="btn-primary px-3 py-1.5 rounded-lg text-xs">
+              Apply
+            </button>
+          </form>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {classes.map(cls => (
-            <div key={cls.id} className="glass-card rounded-2xl p-4 flex items-center justify-between">
+        {appliedPromo && (
+          <div className="mt-2 badge-success px-3 py-2 rounded-lg text-xs font-mono flex items-center gap-2">
+            <Check className="w-3.5 h-3.5" />
+            <span><strong>{appliedPromo.code}</strong> applied — savings reflected in pricing below</span>
+          </div>
+        )}
+
+        {promoError && (
+          <div className="mt-2 badge-danger px-3 py-2 rounded-lg text-xs font-mono">{promoError}</div>
+        )}
+      </section>
+
+      {/* Pricing */}
+      <section className="max-w-5xl mx-auto px-6 sm:px-8 pb-16">
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold text-white tracking-tight">Membership</h3>
+          <p className="text-sm text-zinc-500 mt-1">Simple pricing. Cancel anytime.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {PLANS.map(plan => (
+            <div 
+              key={plan.id} 
+              className={`rounded-xl p-5 flex flex-col justify-between relative ${
+                plan.featured 
+                  ? 'bg-[#111317] border-2 border-white/[0.16]' 
+                  : 'card'
+              }`}
+            >
+              {plan.featured && (
+                <span className="absolute -top-2.5 left-5 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-white text-zinc-950">
+                  Popular
+                </span>
+              )}
+
               <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-mono text-xs font-bold text-orange-400">{cls.startTime}</span>
-                  <span className="text-zinc-500 text-xs">•</span>
-                  <span className="text-xs font-semibold text-white">{cls.name}</span>
+                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{plan.tier}</span>
+                <h4 className="text-base font-semibold text-white mt-1">{plan.name}</h4>
+
+                <div className="flex items-baseline gap-1 mt-4 mb-5">
+                  <span className="text-3xl font-semibold text-white tabular-nums">
+                    ${calculatePrice(plan.price).toFixed(0)}
+                  </span>
+                  <span className="text-xs text-zinc-500 font-mono">/{plan.interval}</span>
+                  {appliedPromo && (
+                    <span className="text-xs text-zinc-600 line-through font-mono ml-1.5">${plan.price}</span>
+                  )}
                 </div>
-                <div className="text-[11px] text-zinc-400">
-                  Coach: {cls.coachName} • {cls.room}
-                </div>
+
+                <ul className="space-y-2.5">
+                  {plan.features.map((feature, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-xs text-zinc-400">
+                      <Check className="w-3.5 h-3.5 text-zinc-600 shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
-              <div className="text-right">
-                <div className="font-mono text-xs font-bold text-zinc-200">
-                  {cls.bookedCount} / {cls.capacity} Booked
-                </div>
-                <span className="text-[10px] text-zinc-400 font-medium">Slots Open</span>
-              </div>
+              <button
+                onClick={() => setCheckoutModalPlan(plan.name)}
+                className={`mt-6 w-full py-2.5 rounded-lg text-xs font-medium ${
+                  plan.featured 
+                    ? 'btn-primary' 
+                    : 'btn-secondary'
+                }`}
+              >
+                {plan.featured ? 'Start Membership' : `Select ${plan.name}`}
+              </button>
             </div>
           ))}
         </div>
       </section>
 
+      {/* Class Timetable */}
+      <section className="max-w-5xl mx-auto px-6 sm:px-8 pb-20">
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold text-white tracking-tight">Today's Classes</h3>
+          <p className="text-sm text-zinc-500 mt-1">Live capacity from the front-desk scheduler</p>
+        </div>
+
+        <div className="card overflow-hidden divide-y divide-white/[0.04]">
+          {classes.map(cls => {
+            const spotsLeft = cls.capacity - cls.bookedCount;
+            return (
+              <div key={cls.id} className="px-5 py-3.5 flex items-center justify-between gap-4 hover:bg-white/[0.015] transition-colors">
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className="text-center shrink-0 w-12">
+                    <div className="font-mono text-sm font-semibold text-white">{cls.startTime}</div>
+                    <div className="font-mono text-[10px] text-zinc-600">{cls.endTime}</div>
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="font-medium text-sm text-white truncate">{cls.name}</h4>
+                    <p className="text-[11px] text-zinc-500 truncate">{cls.coachName} · {cls.room}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className={`font-mono text-xs tabular-nums ${spotsLeft <= 2 ? 'text-amber-400' : 'text-zinc-400'}`}>
+                    {spotsLeft > 0 ? `${spotsLeft} spots` : 'Full'}
+                  </span>
+                  <button className="btn-secondary px-2.5 py-1 rounded-md text-[11px]">
+                    Book
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="border-t border-white/10 py-8 text-center text-xs text-zinc-500 font-mono">
-        Powered by IronPulse Multi-Tenant Platform • Subdomain: {currentTenant.subdomain}
+      <footer className="border-t border-white/[0.06] py-10 px-6">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-600">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded bg-white text-zinc-950 font-bold text-[8px] flex items-center justify-center">IP</div>
+            <span className="font-mono">Powered by IronPulse</span>
+          </div>
+          <div className="flex items-center gap-4 font-mono">
+            <span>{currentTenant.subdomain}</span>
+            <span>·</span>
+            <span>{currentTenant.phone}</span>
+          </div>
+        </div>
       </footer>
 
-      {/* Checkout Modal Simulation */}
+      {/* Checkout Modal */}
       {checkoutModalPlan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="glass-panel w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+          <div className="modal-panel w-full max-w-sm rounded-xl p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-white text-base">Checkout: {checkoutModalPlan}</h3>
+              <h3 className="font-semibold text-white text-sm">{checkoutModalPlan}</h3>
               <button 
                 onClick={() => setCheckoutModalPlan(null)}
-                className="text-zinc-400 hover:text-white text-sm"
+                className="text-zinc-500 hover:text-white transition-colors"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <p className="text-xs text-zinc-400">
-              Sign in with your email or phone to link your digital turnstile pass to your smartphone wallet.
+              Sign in to link your digital pass to your smartphone wallet.
             </p>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <button 
                 onClick={() => {
-                  alert(`Demo: Registered successfully for ${checkoutModalPlan}! PIN code sent via SMS.`);
+                  alert(`Registered for ${checkoutModalPlan}. PIN code sent via SMS.`);
                   setCheckoutModalPlan(null);
                 }}
-                className="w-full py-2.5 rounded-xl text-xs font-semibold bg-white text-zinc-900 hover:bg-zinc-200 tactile-btn flex items-center justify-center gap-2"
+                className="btn-primary w-full py-2.5 rounded-lg text-xs flex items-center justify-center gap-2"
               >
-                Continue with Google
+                <Mail className="w-3.5 h-3.5" />
+                Continue with Email
               </button>
               <button 
                 onClick={() => {
-                  alert(`Demo: Registered successfully for ${checkoutModalPlan}! PIN code sent via SMS.`);
+                  alert(`Registered for ${checkoutModalPlan}. PIN code sent via SMS.`);
                   setCheckoutModalPlan(null);
                 }}
-                className="w-full py-2.5 rounded-xl text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-white border border-white/10 tactile-btn flex items-center justify-center gap-2"
+                className="btn-secondary w-full py-2.5 rounded-lg text-xs flex items-center justify-center gap-2"
               >
-                Continue with Phone (SMS OTP)
+                <Phone className="w-3.5 h-3.5" />
+                Continue with Phone
               </button>
             </div>
           </div>
