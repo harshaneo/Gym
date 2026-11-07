@@ -6,11 +6,12 @@ import {
   Send, 
   Check, 
   Activity,
-  CreditCard
+  CreditCard,
+  MessageSquare
 } from 'lucide-react';
 
 export const RetentionRadarView: React.FC = () => {
-  const { churnRisks, dispatchRetentionAction } = useTenant();
+  const { churnRisks, dispatchRetentionAction, openWhatsAppModal, currentTenant } = useTenant();
 
   const [activeTab, setActiveTab] = useState<'ALL' | 'STEEP_DROP' | 'FAILED_BILLING'>('ALL');
   const [actionSuccessNotice, setActionSuccessNotice] = useState<string | null>(null);
@@ -179,11 +180,25 @@ export const RetentionRadarView: React.FC = () => {
               <div className="pt-3 border-t border-white/[0.04] flex items-center gap-2">
                 <button
                   type="button"
+                  onClick={() => openWhatsAppModal(
+                    risk.phone,
+                    risk.memberName,
+                    `Aayubowan ${risk.memberName}! We noticed you haven’t checked in at ${currentTenant.name} for ${risk.daysSinceLastVisit} days.\n\n` +
+                    `Our head coach is on the floor today and we have reserved a complimentary recovery/mobility pass for you this week. Would love to see you back!`
+                  )}
+                  className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-medium flex items-center gap-1.5 transition-colors"
+                  title="Direct WhatsApp Re-engagement"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>WhatsApp</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => handleTriggerAction(risk.id, risk.memberName, 'Dispatched automated SMS pass incentive')}
                   className="btn-primary flex-1 py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5"
                 >
                   <Send className="w-3 h-3" />
-                  <span>Send Recovery Offer</span>
+                  <span>Send Offer</span>
                 </button>
                 <button
                   type="button"

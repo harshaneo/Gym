@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useTenant } from '../../context/TenantContext';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, MessageSquare } from 'lucide-react';
 
 export const MembersView: React.FC = () => {
-  const { members } = useTenant();
+  const { members, openWhatsAppModal } = useTenant();
   const [searchTerm, setSearchTerm] = useState('');
   const [tierFilter, setTierFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -156,7 +156,14 @@ export const MembersView: React.FC = () => {
 
               <div className="mt-3 pt-2.5 border-t border-white/[0.04] flex items-center justify-between text-[10px] text-zinc-500 font-mono">
                 <span>Joined {m.joinedDate}</span>
-                <span>Emergency: {m.emergencyContact.split('(')[0].trim()}</span>
+                <button
+                  type="button"
+                  onClick={() => openWhatsAppModal(m.phone, m.fullName)}
+                  className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-sans text-[11px] font-medium transition-colors"
+                >
+                  <MessageSquare className="w-3 h-3" />
+                  <span>WhatsApp</span>
+                </button>
               </div>
             </div>
           );

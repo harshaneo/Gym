@@ -13,6 +13,11 @@ import { GymSettingsView } from './components/views/GymSettingsView';
 import { RetailPOSView } from './components/views/RetailPOSView';
 import { RetentionRadarView } from './components/views/RetentionRadarView';
 import { EquipmentTrackerView } from './components/views/EquipmentTrackerView';
+import { TrainerPayrollView } from './components/views/TrainerPayrollView';
+import { BankSlipPaymentsView } from './components/views/BankSlipPaymentsView';
+import { PTPunchCardView } from './components/views/PTPunchCardView';
+import { MembershipFreezeView } from './components/views/MembershipFreezeView';
+import { WhatsAppDispatchModal } from './components/WhatsAppDispatchModal';
 import { PublicPortalPreview } from './components/views/PublicPortalPreview';
 import { PlatformControlPlaneView } from './components/views/PlatformControlPlaneView';
 import { 
@@ -96,9 +101,15 @@ const MainLayout: React.FC = () => {
           {currentTab === 'pos' && <RetailPOSView />}
           {currentTab === 'retention' && <RetentionRadarView />}
           {currentTab === 'equipment' && <EquipmentTrackerView />}
+          {currentTab === 'payroll' && <TrainerPayrollView />}
+          {currentTab === 'bank-slips' && <BankSlipPaymentsView />}
+          {currentTab === 'pt-punch' && <PTPunchCardView />}
+          {currentTab === 'freezes' && <MembershipFreezeView />}
           {currentTab === 'settings' && <GymSettingsView />}
         </main>
       </div>
+
+      <WhatsAppDispatchModal />
 
       {/* Mobile Bottom Navigation */}
       <nav 

@@ -41,6 +41,15 @@ export interface Tenant {
   heroImage?: string;
   amenities?: string[];
   showOccupancyLive?: boolean;
+
+  // Sri Lanka Banking & QR Settings
+  bankDetails?: {
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+    branch: string;
+  };
+  lankaQrMerchantId?: string;
 }
 
 export interface Coach {
@@ -194,6 +203,10 @@ export type NavTab =
   | 'pos'
   | 'retention'
   | 'equipment'
+  | 'payroll'
+  | 'bank-slips'
+  | 'pt-punch'
+  | 'freezes'
   | 'settings';
 
 export interface RetailProduct {
@@ -243,4 +256,109 @@ export interface GymEquipment {
   lastServiceDate: string;
   nextServiceDueDate: string;
   notes: string;
+}
+
+// ----------------------------------------------------
+// Sri Lanka-First Specialized Operational Modules
+// ----------------------------------------------------
+
+export interface TrainerPayrollRecord {
+  id: string;
+  tenantId: string;
+  coachId: string;
+  coachName: string;
+  role: 'HEAD_COACH' | 'PERSONAL_TRAINER' | 'FLOOR_INSTRUCTOR';
+  baseSalaryLKR: number;
+  ptSessionsCompleted: number;
+  ptCommissionRateLKR: number;
+  ptTotalCommissionLKR: number;
+  groupClassesTaught: number;
+  groupClassRateLKR: number;
+  salaryAdvancesDeductedLKR: number;
+  epfDeductionLKR: number; // 8% EPF employee contribution (optional toggle)
+  netPayableLKR: number;
+  month: string; // '2026-11'
+  status: 'DRAFT' | 'APPROVED' | 'DISBURSED';
+  paymentMethod: 'COMMERCIAL_BANK_TRANSFER' | 'SAMPATH_VISHWA' | 'CASH_ENVELOPE';
+  disbursedDate?: string;
+  referenceNo?: string;
+}
+
+export interface SalaryAdvance {
+  id: string;
+  tenantId: string;
+  coachId: string;
+  coachName: string;
+  amountLKR: number;
+  date: string;
+  reason: string;
+  approvedBy: string;
+  isDeducted: boolean;
+}
+
+export interface BankTransferSlip {
+  id: string;
+  tenantId: string;
+  memberId: string;
+  memberName: string;
+  memberPhone: string;
+  bankName: 'COMMERCIAL_BANK' | 'SAMPATH_BANK' | 'HNB' | 'BOC' | 'FRIMI';
+  accountNumber: string;
+  referenceNumber: string;
+  amountLKR: number;
+  slipImageUrl: string;
+  submittedAt: string;
+  status: 'PENDING_VERIFICATION' | 'APPROVED' | 'REJECTED';
+  membershipTierToActivate: MembershipTier;
+  durationMonths: number;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  rejectionReason?: string;
+  notes?: string;
+}
+
+export interface PTPackage {
+  id: string;
+  tenantId: string;
+  memberId: string;
+  memberName: string;
+  memberPhone: string;
+  assignedCoachId: string;
+  assignedCoachName: string;
+  packageName: string;
+  totalSessions: number;
+  completedSessions: number;
+  remainingSessions: number;
+  priceLKR: number;
+  costPerSessionLKR: number;
+  coachCommissionPerSessionLKR: number;
+  purchasedDate: string;
+  expiryDate: string;
+  status: 'ACTIVE' | 'LOW_BALANCE' | 'DEPLETED' | 'EXPIRED';
+  sessionPunches: {
+    id: string;
+    date: string;
+    time: string;
+    workoutFocus: string;
+    coachNotes: string;
+    punchedBy: string;
+  }[];
+}
+
+export interface MembershipFreeze {
+  id: string;
+  tenantId: string;
+  memberId: string;
+  memberName: string;
+  membershipTier: MembershipTier;
+  startDate: string;
+  scheduledResumeDate: string;
+  actualResumeDate?: string;
+  daysFrozen: number;
+  reason: 'AL_EXAMS' | 'UNIVERSITY_MIDTERMS' | 'MEDICAL_DENGUE' | 'RAMADAN_FASTING' | 'OVERSEAS_TRAVEL' | 'WORK_ROTATION';
+  status: 'ACTIVE_FREEZE' | 'RESUMED' | 'CANCELLED';
+  approvedBy: string;
+  notes?: string;
+  oldExpiryDate: string;
+  newExpiryDate: string;
 }

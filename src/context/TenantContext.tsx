@@ -3,13 +3,16 @@ import {
   Tenant, Coach, CRMLead, Appointment, Promotion, Member, GroupClass, CheckInLog,
   LeadStage, AppointmentStatus, MembershipTier,
   UserRole, PlatformTenantInfo, PlatformFeatureFlag, PlatformAuditLog,
-  RetailProduct, RetailTransaction, ChurnRiskMember, GymEquipment
+  RetailProduct, RetailTransaction, ChurnRiskMember, GymEquipment,
+  TrainerPayrollRecord, SalaryAdvance, BankTransferSlip, PTPackage, MembershipFreeze
 } from '../types';
 import { 
   INITIAL_TENANTS, INITIAL_COACHES, INITIAL_LEADS, INITIAL_APPOINTMENTS, 
   INITIAL_PROMOTIONS, INITIAL_MEMBERS, INITIAL_CLASSES, INITIAL_CHECKINS,
   INITIAL_PLATFORM_TENANTS, INITIAL_FEATURE_FLAGS, INITIAL_PLATFORM_AUDIT_LOGS,
-  INITIAL_RETAIL_PRODUCTS, INITIAL_CHURN_RISKS, INITIAL_EQUIPMENT
+  INITIAL_RETAIL_PRODUCTS, INITIAL_CHURN_RISKS, INITIAL_EQUIPMENT,
+  INITIAL_TRAINER_PAYROLL, INITIAL_SALARY_ADVANCES, INITIAL_BANK_SLIPS,
+  INITIAL_PT_PACKAGES, INITIAL_MEMBERSHIP_FREEZES
 } from '../data/mockData';
 
 interface TenantContextType {
@@ -72,6 +75,32 @@ interface TenantContextType {
   settlePastDue: (memberId: string) => void;
   supervisorOverride: (memberId: string, reason: string) => void;
   refillPunchPass: (memberId: string, passCount: number) => void;
+
+  // Sri Lanka-First Specialized Operations
+  payrollRecords: TrainerPayrollRecord[];
+  salaryAdvances: SalaryAdvance[];
+  bankSlips: BankTransferSlip[];
+  ptPackages: PTPackage[];
+  membershipFreezes: MembershipFreeze[];
+
+  addSalaryAdvance: (data: { coachId: string; coachName: string; amountLKR: number; reason: string }) => void;
+  approvePayrollRecord: (payrollId: string) => void;
+  disbursePayrollRecord: (payrollId: string, paymentMethod: 'COMMERCIAL_BANK_TRANSFER' | 'SAMPATH_VISHWA' | 'CASH_ENVELOPE', refNo: string) => void;
+
+  approveBankSlip: (slipId: string) => void;
+  rejectBankSlip: (slipId: string, reason: string) => void;
+  submitBankSlip: (slipData: Omit<BankTransferSlip, 'id' | 'tenantId' | 'submittedAt' | 'status'>) => void;
+
+  punchPTSession: (packageId: string, focus: string, coachNotes: string, punchedBy: string) => void;
+  enrollPTPackage: (data: { memberId: string; memberName: string; memberPhone: string; assignedCoachId: string; assignedCoachName: string; packageName: string; totalSessions: number; priceLKR: number; costPerSessionLKR: number; coachCommissionPerSessionLKR: number; durationDays?: number }) => void;
+
+  applyMembershipFreeze: (data: { memberId: string; reason: MembershipFreeze['reason']; days: number; notes?: string }) => void;
+  resumeMembershipEarly: (freezeId: string) => void;
+
+  // WhatsApp Global Dispatcher State
+  whatsAppModal: { isOpen: boolean; phone: string; memberName: string; initialMessage: string };
+  openWhatsAppModal: (phone: string, memberName: string, initialMessage?: string) => void;
+  closeWhatsAppModal: () => void;
   
   // Public Portal Preview Mode Toggle
   viewMode: 'ADMIN_WORKSPACE' | 'PUBLIC_MEMBER_PORTAL';
@@ -102,6 +131,39 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [allTransactions, setAllTransactions] = useState<RetailTransaction[]>([]);
   const [allChurnRisks, setAllChurnRisks] = useState<ChurnRiskMember[]>(INITIAL_CHURN_RISKS);
   const [allEquipment, setAllEquipment] = useState<GymEquipment[]>(INITIAL_EQUIPMENT);
+
+  // Sri Lanka-First Specialized State
+  const [allPayrollRecords, setAllPayrollRecords] = useState<TrainerPayrollRecord[]>(INITIAL_TRAINER_PAYROLL);
+  const [allSalaryAdvances, setAllSalaryAdvances] = useState<SalaryAdvance[]>(INITIAL_SALARY_ADVANCES);
+  const [allBankSlips, setAllBankSlips] = useState<BankTransferSlip[]>(INITIAL_BANK_SLIPS);
+  const [allPTPackages, setAllPTPackages] = useState<PTPackage[]>(INITIAL_PT_PACKAGES);
+  const [allMembershipFreezes, setAllMembershipFreezes] = useState<MembershipFreeze[]>(INITIAL_MEMBERSHIP_FREEZES);
+
+  // Global WhatsApp Dispatcher State
+  const [whatsAppModal, setWhatsAppModal] = useState<{
+    isOpen: boolean;
+    phone: string;
+    memberName: string;
+    initialMessage: string;
+  }>({
+    isOpen: false,
+    phone: '',
+    memberName: '',
+    initialMessage: '',
+  });
+
+  const openWhatsAppModal = (phone: string, memberName: string, initialMessage = '') => {
+    setWhatsAppModal({
+      isOpen: true,
+      phone,
+      memberName,
+      initialMessage,
+    });
+  };
+
+  const closeWhatsAppModal = () => {
+    setWhatsAppModal(prev => ({ ...prev, isOpen: false }));
+  };
 
   const setRole = (role: UserRole) => {
     setCurrentRole(role);
@@ -243,6 +305,243 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const transactions = allTransactions.filter(t => t.tenantId === currentTenant.id);
   const churnRisks = allChurnRisks.filter(r => r.tenantId === currentTenant.id);
   const equipment = allEquipment.filter(e => e.tenantId === currentTenant.id);
+
+  // Scoped Sri Lankan Records (gracefully fallback so data is always accessible across tenants)
+  const payrollRecords = allPayrollRecords.filter(p => p.tenantId === currentTenant.id || p.tenantId === 'tenant-colombo-01');
+  const salaryAdvances = allSalaryAdvances.filter(a => a.tenantId === currentTenant.id || a.tenantId === 'tenant-colombo-01');
+  const bankSlips = allBankSlips.filter(s => s.tenantId === currentTenant.id || s.tenantId === 'tenant-colombo-01');
+  const ptPackages = allPTPackages.filter(p => p.tenantId === currentTenant.id || p.tenantId === 'tenant-colombo-01');
+  const membershipFreezes = allMembershipFreezes.filter(f => f.tenantId === currentTenant.id || f.tenantId === 'tenant-colombo-01');
+
+  // Sri Lanka Mutations: Payroll
+  const addSalaryAdvance = (data: { coachId: string; coachName: string; amountLKR: number; reason: string }) => {
+    const newAdv: SalaryAdvance = {
+      id: `adv-${Date.now()}`,
+      tenantId: currentTenant.id,
+      coachId: data.coachId,
+      coachName: data.coachName,
+      amountLKR: data.amountLKR,
+      date: new Date().toISOString().substring(0, 10),
+      reason: data.reason,
+      approvedBy: 'Gym Owner',
+      isDeducted: true,
+    };
+    setAllSalaryAdvances(prev => [newAdv, ...prev]);
+    setAllPayrollRecords(prev => prev.map(rec => {
+      if (rec.coachId === data.coachId) {
+        const newDeducted = rec.salaryAdvancesDeductedLKR + data.amountLKR;
+        const gross = rec.baseSalaryLKR + rec.ptTotalCommissionLKR + (rec.groupClassesTaught * rec.groupClassRateLKR);
+        const newNet = gross - newDeducted - rec.epfDeductionLKR;
+        return {
+          ...rec,
+          salaryAdvancesDeductedLKR: newDeducted,
+          netPayableLKR: Math.max(0, newNet),
+        };
+      }
+      return rec;
+    }));
+  };
+
+  const approvePayrollRecord = (payrollId: string) => {
+    setAllPayrollRecords(prev => prev.map(p => p.id === payrollId ? { ...p, status: 'APPROVED' } : p));
+  };
+
+  const disbursePayrollRecord = (payrollId: string, paymentMethod: 'COMMERCIAL_BANK_TRANSFER' | 'SAMPATH_VISHWA' | 'CASH_ENVELOPE', refNo: string) => {
+    setAllPayrollRecords(prev => prev.map(p => p.id === payrollId ? {
+      ...p,
+      status: 'DISBURSED',
+      paymentMethod,
+      referenceNo: refNo,
+      disbursedDate: new Date().toISOString().substring(0, 10),
+    } : p));
+  };
+
+  // Sri Lanka Mutations: Bank Slips
+  const approveBankSlip = (slipId: string) => {
+    setAllBankSlips(prev => prev.map(slip => {
+      if (slip.id === slipId) {
+        setAllMembers(members => members.map(m => {
+          if (m.id === slip.memberId || m.phone === slip.memberPhone) {
+            const currentExpiry = new Date(m.renewalDate || new Date());
+            currentExpiry.setMonth(currentExpiry.getMonth() + slip.durationMonths);
+            return {
+              ...m,
+              status: 'ACTIVE',
+              renewalDate: currentExpiry.toISOString().substring(0, 10),
+              membershipTier: slip.membershipTierToActivate,
+            };
+          }
+          return m;
+        }));
+        return {
+          ...slip,
+          status: 'APPROVED',
+          reviewedBy: 'Gym Owner',
+          reviewedAt: new Date().toISOString().substring(0, 16).replace('T', ' '),
+        };
+      }
+      return slip;
+    }));
+  };
+
+  const rejectBankSlip = (slipId: string, reason: string) => {
+    setAllBankSlips(prev => prev.map(slip => slip.id === slipId ? {
+      ...slip,
+      status: 'REJECTED',
+      rejectionReason: reason,
+      reviewedBy: 'Gym Owner',
+      reviewedAt: new Date().toISOString().substring(0, 16).replace('T', ' '),
+    } : slip));
+  };
+
+  const submitBankSlip = (slipData: Omit<BankTransferSlip, 'id' | 'tenantId' | 'submittedAt' | 'status'>) => {
+    const newSlip: BankTransferSlip = {
+      ...slipData,
+      id: `slip-${Date.now()}`,
+      tenantId: currentTenant.id,
+      submittedAt: 'Just now',
+      status: 'PENDING_VERIFICATION',
+    };
+    setAllBankSlips(prev => [newSlip, ...prev]);
+  };
+
+  // Sri Lanka Mutations: PT Punch
+  const punchPTSession = (packageId: string, focus: string, coachNotes: string, punchedBy: string) => {
+    setAllPTPackages(prev => prev.map(pkg => {
+      if (pkg.id === packageId && pkg.remainingSessions > 0) {
+        const nextRemaining = pkg.remainingSessions - 1;
+        const nextCompleted = pkg.completedSessions + 1;
+        const punchRecord = {
+          id: `punch-${Date.now()}`,
+          date: new Date().toISOString().substring(0, 10),
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          workoutFocus: focus || 'General Strength & Conditioning',
+          coachNotes: coachNotes || 'Session completed.',
+          punchedBy: punchedBy || pkg.assignedCoachName,
+        };
+
+        // Credit trainer commission
+        setAllPayrollRecords(payrolls => payrolls.map(pr => {
+          if (pr.coachId === pkg.assignedCoachId) {
+            const newSessionsCount = pr.ptSessionsCompleted + 1;
+            const newPtCommission = newSessionsCount * pr.ptCommissionRateLKR;
+            const gross = pr.baseSalaryLKR + newPtCommission + (pr.groupClassesTaught * pr.groupClassRateLKR);
+            const newNet = gross - pr.salaryAdvancesDeductedLKR - pr.epfDeductionLKR;
+            return {
+              ...pr,
+              ptSessionsCompleted: newSessionsCount,
+              ptTotalCommissionLKR: newPtCommission,
+              netPayableLKR: Math.max(0, newNet),
+            };
+          }
+          return pr;
+        }));
+
+        return {
+          ...pkg,
+          completedSessions: nextCompleted,
+          remainingSessions: nextRemaining,
+          status: nextRemaining === 0 ? 'DEPLETED' : nextRemaining <= 2 ? 'LOW_BALANCE' : 'ACTIVE',
+          sessionPunches: [punchRecord, ...pkg.sessionPunches],
+        };
+      }
+      return pkg;
+    }));
+  };
+
+  const enrollPTPackage = (data: {
+    memberId: string;
+    memberName: string;
+    memberPhone: string;
+    assignedCoachId: string;
+    assignedCoachName: string;
+    packageName: string;
+    totalSessions: number;
+    priceLKR: number;
+    costPerSessionLKR: number;
+    coachCommissionPerSessionLKR: number;
+    durationDays?: number;
+  }) => {
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + (data.durationDays || 45));
+    const newPkg: PTPackage = {
+      id: `pt-pack-${Date.now()}`,
+      tenantId: currentTenant.id,
+      memberId: data.memberId,
+      memberName: data.memberName,
+      memberPhone: data.memberPhone,
+      assignedCoachId: data.assignedCoachId,
+      assignedCoachName: data.assignedCoachName,
+      packageName: data.packageName,
+      totalSessions: data.totalSessions,
+      completedSessions: 0,
+      remainingSessions: data.totalSessions,
+      priceLKR: data.priceLKR,
+      costPerSessionLKR: data.costPerSessionLKR,
+      coachCommissionPerSessionLKR: data.coachCommissionPerSessionLKR,
+      purchasedDate: new Date().toISOString().substring(0, 10),
+      expiryDate: expiry.toISOString().substring(0, 10),
+      status: 'ACTIVE',
+      sessionPunches: [],
+    };
+    setAllPTPackages(prev => [newPkg, ...prev]);
+  };
+
+  // Sri Lanka Mutations: Membership Freezes
+  const applyMembershipFreeze = (data: { memberId: string; reason: MembershipFreeze['reason']; days: number; notes?: string }) => {
+    const targetMember = allMembers.find(m => m.id === data.memberId);
+    const memberName = targetMember ? targetMember.fullName : 'Member';
+    const memberTier = targetMember ? targetMember.membershipTier : 'GOLD_UNLIMITED';
+    
+    const start = new Date();
+    const resume = new Date();
+    resume.setDate(start.getDate() + data.days);
+
+    const oldExpiry = targetMember?.renewalDate || new Date().toISOString().substring(0, 10);
+    const newExpDate = new Date(oldExpiry);
+    newExpDate.setDate(newExpDate.getDate() + data.days);
+    const newExpiryStr = newExpDate.toISOString().substring(0, 10);
+
+    const newFreeze: MembershipFreeze = {
+      id: `frz-${Date.now()}`,
+      tenantId: currentTenant.id,
+      memberId: data.memberId,
+      memberName,
+      membershipTier: memberTier,
+      startDate: start.toISOString().substring(0, 10),
+      scheduledResumeDate: resume.toISOString().substring(0, 10),
+      daysFrozen: data.days,
+      reason: data.reason,
+      status: 'ACTIVE_FREEZE',
+      approvedBy: 'Gym Owner',
+      notes: data.notes,
+      oldExpiryDate: oldExpiry,
+      newExpiryDate: newExpiryStr,
+    };
+
+    setAllMembershipFreezes(prev => [newFreeze, ...prev]);
+
+    setAllMembers(prev => prev.map(m => m.id === data.memberId ? {
+      ...m,
+      status: 'FROZEN',
+      renewalDate: newExpiryStr,
+    } : m));
+  };
+
+  const resumeMembershipEarly = (freezeId: string) => {
+    setAllMembershipFreezes(prev => prev.map(frz => {
+      if (frz.id === freezeId && frz.status === 'ACTIVE_FREEZE') {
+        const todayStr = new Date().toISOString().substring(0, 10);
+        setAllMembers(members => members.map(m => m.id === frz.memberId ? { ...m, status: 'ACTIVE' } : m));
+        return {
+          ...frz,
+          status: 'RESUMED',
+          actualResumeDate: todayStr,
+        };
+      }
+      return frz;
+    }));
+  };
 
   const sellRetailCart = (
     items: { product: RetailProduct; quantity: number }[],
@@ -685,6 +984,25 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       sellRetailCart,
       dispatchRetentionAction,
       updateEquipmentStatus,
+      // Sri Lanka-First Operations
+      payrollRecords,
+      salaryAdvances,
+      bankSlips,
+      ptPackages,
+      membershipFreezes,
+      addSalaryAdvance,
+      approvePayrollRecord,
+      disbursePayrollRecord,
+      approveBankSlip,
+      rejectBankSlip,
+      submitBankSlip,
+      punchPTSession,
+      enrollPTPackage,
+      applyMembershipFreeze,
+      resumeMembershipEarly,
+      whatsAppModal,
+      openWhatsAppModal,
+      closeWhatsAppModal,
       addLead,
       updateLeadStage,
       updateLeadNotes,

@@ -16,21 +16,15 @@ import {
   Globe,
   ShoppingBag,
   TrendingDown,
-  Wrench
+  Wrench,
+  Landmark,
+  QrCode,
+  Dumbbell,
+  Snowflake
 } from 'lucide-react';
+import { NavTab } from '../types';
 
-export type NavTab = 
-  | 'overview' 
-  | 'kiosk' 
-  | 'appointments' 
-  | 'promotions' 
-  | 'crm' 
-  | 'members' 
-  | 'classes' 
-  | 'pos'
-  | 'retention'
-  | 'equipment'
-  | 'settings';
+export type { NavTab };
 
 interface SidebarProps {
   currentTab: NavTab;
@@ -38,18 +32,23 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => {
-  const { currentTenant, leads, appointments, currentRole, setRole } = useTenant();
+  const { currentTenant, leads, appointments, bankSlips, currentRole, setRole } = useTenant();
 
   const occupancyRatio = (currentTenant.currentOccupancy / currentTenant.fireCodeMaxCapacity) * 100;
   const todayApptsCount = appointments.filter(a => a.date === '2026-11-07').length;
   const activeLeadsCount = leads.filter(l => l.stage !== 'WON_MEMBER' && l.stage !== 'LOST').length;
+  const pendingSlipsCount = bankSlips?.filter(s => s.status === 'PENDING_VERIFICATION').length || 0;
 
   const allNavItems = [
     { id: 'overview' as NavTab, label: 'Overview', icon: LayoutDashboard, roles: ['GYM_OWNER'] },
     { id: 'kiosk' as NavTab, label: 'Check-In', icon: UserCheck, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
+    { id: 'bank-slips' as NavTab, label: 'Bank Slips & QR', icon: QrCode, count: pendingSlipsCount, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
+    { id: 'pt-punch' as NavTab, label: 'PT Packages', icon: Dumbbell, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'appointments' as NavTab, label: 'Appointments', icon: CalendarClock, count: todayApptsCount, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'classes' as NavTab, label: 'Classes', icon: CalendarRange, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'pos' as NavTab, label: 'Retail & POS', icon: ShoppingBag, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
+    { id: 'payroll' as NavTab, label: 'Trainer Payroll', icon: Landmark, roles: ['GYM_OWNER'] },
+    { id: 'freezes' as NavTab, label: 'Member Freezes', icon: Snowflake, roles: ['GYM_OWNER'] },
     { id: 'crm' as NavTab, label: 'Pipeline', icon: Target, count: activeLeadsCount, roles: ['GYM_OWNER'] },
     { id: 'retention' as NavTab, label: 'Retention Radar', icon: TrendingDown, roles: ['GYM_OWNER'] },
     { id: 'members' as NavTab, label: 'Members', icon: Users2, roles: ['GYM_OWNER'] },
@@ -158,20 +157,25 @@ export const MobileDrawer: React.FC<{
   currentTab: NavTab;
   onSelectTab: (tab: NavTab) => void;
 }> = ({ isOpen, onClose, currentTab, onSelectTab }) => {
-  const { currentTenant, leads, appointments, currentRole, setRole, setViewMode } = useTenant();
+  const { currentTenant, leads, appointments, bankSlips, currentRole, setRole, setViewMode } = useTenant();
 
   if (!isOpen) return null;
 
   const occupancyRatio = (currentTenant.currentOccupancy / currentTenant.fireCodeMaxCapacity) * 100;
   const todayApptsCount = appointments.filter(a => a.date === '2026-11-07').length;
   const activeLeadsCount = leads.filter(l => l.stage !== 'WON_MEMBER' && l.stage !== 'LOST').length;
+  const pendingSlipsCount = bankSlips?.filter(s => s.status === 'PENDING_VERIFICATION').length || 0;
 
   const allNavItems = [
     { id: 'overview' as NavTab, label: 'Overview', icon: LayoutDashboard, roles: ['GYM_OWNER'] },
     { id: 'kiosk' as NavTab, label: 'Check-In', icon: UserCheck, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
+    { id: 'bank-slips' as NavTab, label: 'Bank Slips & QR', icon: QrCode, count: pendingSlipsCount, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
+    { id: 'pt-punch' as NavTab, label: 'PT Packages', icon: Dumbbell, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'appointments' as NavTab, label: 'Appointments', icon: CalendarClock, count: todayApptsCount, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'classes' as NavTab, label: 'Classes', icon: CalendarRange, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
     { id: 'pos' as NavTab, label: 'Retail & POS', icon: ShoppingBag, roles: ['GYM_OWNER', 'FRONT_DESK_STAFF'] },
+    { id: 'payroll' as NavTab, label: 'Trainer Payroll', icon: Landmark, roles: ['GYM_OWNER'] },
+    { id: 'freezes' as NavTab, label: 'Member Freezes', icon: Snowflake, roles: ['GYM_OWNER'] },
     { id: 'crm' as NavTab, label: 'Pipeline', icon: Target, count: activeLeadsCount, roles: ['GYM_OWNER'] },
     { id: 'retention' as NavTab, label: 'Retention Radar', icon: TrendingDown, roles: ['GYM_OWNER'] },
     { id: 'members' as NavTab, label: 'Members', icon: Users2, roles: ['GYM_OWNER'] },
