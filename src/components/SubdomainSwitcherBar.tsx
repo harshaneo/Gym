@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTenant } from '../context/TenantContext';
-import { ChevronDown, Plus, Check, Menu, ShieldCheck, Globe, LayoutDashboard } from 'lucide-react';
+import { ChevronDown, Plus, Check, Menu, ShieldCheck, Globe, LayoutDashboard, Building2 } from 'lucide-react';
 
 interface SubdomainSwitcherBarProps {
   onOpenMobileDrawer?: () => void;
@@ -75,62 +75,85 @@ export const SubdomainSwitcherBar: React.FC<SubdomainSwitcherBarProps> = ({ onOp
             <span className="font-semibold text-white text-[11px] tracking-tight hidden lg:inline">IRONPULSE</span>
           </div>
 
-          {/* Workspace Picker */}
-          <div className="relative min-w-0">
+          {/* Workspace Picker - Compact Icon Badge with Capped Desktop Label */}
+          <div className="relative shrink-0">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-white/[0.04] text-left transition-colors max-w-[200px] sm:max-w-xs"
+              className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/[0.10] text-left transition-all active:scale-97 group"
+              title={`${currentTenant.name} (${currentTenant.subdomain})`}
             >
-              <div className="flex flex-col min-w-0">
-                <span className="font-medium text-[12px] text-white leading-tight flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full dot-live shrink-0" />
-                  <span className="truncate">{currentTenant.name}</span>
+              <div className="w-6 h-6 rounded-md bg-[#16181d] border border-white/[0.08] flex items-center justify-center text-zinc-300 group-hover:text-white group-hover:border-white/20 transition-colors relative shrink-0">
+                <Building2 className="w-3.5 h-3.5 text-zinc-400 group-hover:text-amber-400 transition-colors" />
+                <span className="w-1.5 h-1.5 rounded-full dot-live absolute -top-0.5 -right-0.5 ring-2 ring-[#08090b]" />
+              </div>
+
+              {/* Responsive Text: Icon-only on mobile, strictly capped & truncated on desktop so right-side controls never get squeezed */}
+              <div className="hidden sm:flex flex-col min-w-0 max-w-[120px] md:max-w-[160px] leading-none">
+                <span className="font-semibold text-[11px] text-white truncate">
+                  {currentTenant.name}
                 </span>
-                <span className="font-mono text-[10px] text-zinc-500 leading-tight mt-px truncate pl-3">
-                  {currentTenant.subdomain}
+                <span className="font-mono text-[9px] text-zinc-500 truncate mt-0.5">
+                  {currentTenant.slug}.ironpulse.app
                 </span>
               </div>
-              <ChevronDown className="w-3 h-3 text-zinc-500 shrink-0" />
+
+              <ChevronDown className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 transition-transform shrink-0 ${dropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {dropdownOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                <div className="absolute left-0 top-full mt-1 w-64 card rounded-lg shadow-2xl py-1 z-50">
-                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider text-zinc-500 border-b border-white/[0.04]">
-                    Workspaces
+                <div className="absolute left-0 top-full mt-1.5 w-72 bg-[#0e1014] border border-white/[0.08] rounded-xl shadow-2xl py-1.5 z-50 overflow-hidden backdrop-blur-md">
+                  <div className="px-3.5 py-2 text-[10px] font-mono uppercase tracking-wider text-zinc-400 border-b border-white/[0.06] flex items-center justify-between">
+                    <span>Active Gym Workspaces</span>
+                    <span className="text-[9px] text-zinc-500 font-mono">{allTenants.length} Tenanted</span>
                   </div>
-                  <div className="py-0.5 max-h-56 overflow-y-auto">
-                    {allTenants.map(t => (
-                      <button
-                        key={t.id}
-                        onClick={() => {
-                          switchTenant(t.slug);
-                          setDropdownOpen(false);
-                        }}
-                        className={`w-full text-left px-3 py-2 flex items-center justify-between text-xs transition-colors ${
-                          t.slug === currentTenant.slug ? 'bg-white/[0.04] text-white' : 'text-zinc-400 hover:text-white hover:bg-white/[0.02]'
-                        }`}
-                      >
-                        <div className="flex flex-col min-w-0">
-                          <span className="font-medium text-[12px] text-white truncate">{t.name}</span>
-                          <span className="font-mono text-[10px] text-zinc-500 mt-px truncate">{t.subdomain}</span>
-                        </div>
-                        {t.slug === currentTenant.slug && <Check className="w-3.5 h-3.5 text-zinc-300 shrink-0 ml-2" />}
-                      </button>
-                    ))}
+                  <div className="py-1 max-h-60 overflow-y-auto divide-y divide-white/[0.02]">
+                    {allTenants.map(t => {
+                      const isSelected = t.slug === currentTenant.slug;
+                      return (
+                        <button
+                          key={t.id}
+                          onClick={() => {
+                            switchTenant(t.slug);
+                            setDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-3.5 py-2.5 flex items-center justify-between text-xs transition-colors ${
+                            isSelected ? 'bg-white/[0.06] text-white' : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
+                              isSelected ? 'bg-white text-zinc-950 font-bold' : 'bg-[#16181d] text-zinc-400 border border-white/[0.06]'
+                            }`}>
+                              {t.name.split(' ').map(n => n[0]).slice(0, 2).join('')}
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-semibold text-xs text-white truncate">{t.name}</span>
+                              <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="font-mono text-[10px] text-zinc-500 truncate">{t.subdomain}</span>
+                                <span className="px-1 py-px rounded text-[8px] font-mono bg-white/[0.06] text-zinc-400 uppercase">
+                                  {t.currency || 'USD'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          {isSelected && <Check className="w-4 h-4 text-emerald-400 shrink-0 ml-2" />}
+                        </button>
+                      );
+                    })}
                   </div>
 
-                  <div className="pt-0.5 border-t border-white/[0.04]">
+                  <div className="p-2 border-t border-white/[0.06] bg-[#0b0d10]">
                     <button
                       onClick={() => {
                         setDropdownOpen(false);
                         setShowNewModal(true);
                       }}
-                      className="w-full text-left px-3 py-2 text-xs text-zinc-400 hover:text-white hover:bg-white/[0.02] flex items-center gap-2 font-medium transition-colors"
+                      className="w-full py-2 px-3 rounded-lg text-xs text-zinc-300 hover:text-white bg-[#16181d] hover:bg-white/[0.08] border border-white/[0.06] flex items-center justify-center gap-1.5 font-medium transition-all"
                     >
-                      <Plus className="w-3.5 h-3.5" />
-                      Create Workspace
+                      <Plus className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Register New Gym Tenant</span>
                     </button>
                   </div>
                 </div>
